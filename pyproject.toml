@@ -9,4 +9,14 @@ dependencies = [
     "pandas>=3.0.1",
     "pyyaml>=6.0.3",
     "scikit-learn>=1.8.0",
+    "torch>=2.7.0",
+    "mambular",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
