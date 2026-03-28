@@ -27,7 +27,7 @@ def process_file(file_path):
 
     time_columns = ['CRS_DEP_TIME', 'DEP_TIME', 'WHEELS_OFF', 'WHEELS_ON', 'CRS_ARR_TIME', 'ARR_TIME']
     for col in time_columns:
-        df[col] = pd.to_datetime(df[col], format='%H%M', errors='coerce')
+        df[col] = pd.to_datetime(df[col], errors='coerce')
         df[col + '_MIN'] = df[col].dt.hour * 60 + df[col].dt.minute
     df.drop(columns=time_columns, inplace=True)
 
@@ -72,8 +72,8 @@ def save_year_data(df, year, output_folder):
                                     'O_LATITUDE', 'O_LONGITUDE', 'D_LATITUDE', 'D_LONGITUDE']
         },
         "data_summary": {
-            "shape": df.shape,
-            "memory_usage_MB": round(df.memory_usage(deep=True).sum() / 1024**2, 2)
+            "shape": [int(x) for x in df.shape],
+            "memory_usage_MB": float(round(df.memory_usage(deep=True).sum() / 1024**2, 2))
         }
     }
 
@@ -82,7 +82,7 @@ def save_year_data(df, year, output_folder):
     print(f"Data description for {year} saved: {yaml_file}")
 
 def main():
-    input_folder = "D:\project\Delay_data\Datasets\data"
+    input_folder = f"C:\\Users\\user\\Desktop\\tez\\git\\Delay-data\\Datasets\\Aeolus\\Flight_Tab"
     output_folder = os.path.join(input_folder, "Tab")
     # year_files = [f"flight_with_weather_{year}.csv" for year in range(2020, 2020)]
     year_files = ["flight_with_weather_2020.csv"]

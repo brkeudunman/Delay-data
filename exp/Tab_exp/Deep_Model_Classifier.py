@@ -10,9 +10,11 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, roc_auc_sco
 from mambular.models import MambularClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+import os
 
-file_name = 'D:\\project\\Delay_data\\Datasets\\arr_delay_data.csv'
-df = pd.read_csv(file_name)
+MAIN_PATH = 'C:\\Users\\user\\Desktop\\tez\\git\\Delay-data\\Datasets\\Aeolus\\Flight_Tab\\Tab'
+file_name = 'Flight_tab_2020.csv'
+df = pd.read_csv(os.path.join(MAIN_PATH, file_name))
 df = df.dropna()
 
 df['ARR_DELAY'] = df['ARR_DELAY'].apply(lambda x: 1 if abs(x) > 15.0 else 0)
@@ -23,7 +25,7 @@ df_test = df[df['FL_DAY'] > 12]
 
 df_list = [df_train, df_vaild, df_test]
 
-with open('D:\\project\\Delay_data\\Datasets\\arr_delay_data_info.yaml', 'r') as yaml_file:
+with open(os.path.join(MAIN_PATH, 'data_info_2020.yaml'), 'r') as yaml_file:
     data_info = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
 categorical_columns = data_info['columns_info']['Categorical Features']
