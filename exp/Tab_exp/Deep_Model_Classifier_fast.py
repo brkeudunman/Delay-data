@@ -136,16 +136,41 @@ param_dist = {
 }
 
 # ============================================================
-# 8. TRAINING LOOP — RANDOMIZED SEARCH + EVALUATION
+# 8. TRAINING LOOP — FAST TWO-PHASE APPROACH
 # ============================================================
-if __name__ == '__main__':
-    # Fix for Windows multiprocessing hanging: Setting dataloader workers to 0 blocks 
-    # PyTorch Lightning from attempting to awkwardly spawn child processes for data.
-    for model_name, model in models.items():
-        print(f"RandomizedSearchCV for {model_name}...")
+CSV_FILE = 'Classifier_results_fast.csv'
 
-        # Randomized hyperparameter search: tries 10 random combinations
-        # with 3-fold cross-validation, optimizing for accuracy.
+if __name__ == '__main__':
+    # Resume from existing results if available (skip already-completed models)
+    if os.path.exists(CSV_FILE):
+        print(f"Found existing {CSV_FILE}, loading to resume progress...")
+        results_df = pd.read_csv(CSV_FILE)
+    else:
+        results_df = pd.DataFrame(columns=['Model', 'AUC', 'ACC'])
+
+    # Phase 1 uses 10% of training data for hyperparameter search (much faster!)
+    X_search = X_train.sample(frac=0.1, random_state=42)
+    y_search = y_train.loc[X_search.index]
+
+    fit_params = {"max_epochs": 100, "rebuild": True, "X_val": X_vaild, "y_val": y_vaild,
+                  "patience": 5,
+                  "dataloader_kwargs": {"num_workers": 4, "persistent_workers": True},
+                  "accelerator": "gpu", "devices": 1, "precision": "16-mixed"}
+
+    for model_name, model in models.items():
+        # Skip models that are already in the CSV
+        if model_name in results_df['Model'].values:
+            print(f"Skipping {model_name}, already completed.")
+            continue
+
+        print(f"\n{'='*60}")
+        print(f"  {model_name}")
+        print(f"{'='*60}")
+
+        # ----------------------------------------------------------
+        # Phase 1: Hyperparameter search on 10% of the training data
+        # ----------------------------------------------------------
+        print(f"Phase 1: Searching hyperparams on 10% data slice ({len(X_search)} rows)...")
         random_search = RandomizedSearchCV(
             estimator=model,
             param_distributions=param_dist,
@@ -154,33 +179,26 @@ if __name__ == '__main__':
             scoring='accuracy',
             random_state=42
         )
+        random_search.fit(X_search, y_search, **fit_params)
+        print(f"Best Parameters: {random_search.best_params_}")
+        print(f"Best CV Score:   {random_search.best_score_:.4f}")
 
-        # Training parameters passed to mambular's .fit() method:
-        #   - max_epochs=100:  upper bound on training epochs
-        #   - patience=5:      early stopping — stop if no improvement for 5 epochs
-        #   - rebuild=True:    rebuild model for each hyperparameter combination
-        #   - X_val/y_val:     validation set for early stopping monitoring
-        #   - accelerator=gpu: use GPU for faster training
-        #   - num_workers=0:   critical on windows to prevent hangs!
-        fit_params = {"max_epochs": 100, "rebuild": True, "X_val": X_vaild, "y_val": y_vaild,
-                      "patience": 5,
-                      "dataloader_kwargs": {"num_workers": 4, "persistent_workers": True},
-                      "accelerator": "gpu", "devices": 1, "precision": "16-mixed"}
-
-        random_search.fit(X_train, y_train, **fit_params)
-        print("Best Parameters:", random_search.best_params_)
-        print("Best Score:", random_search.best_score_)
+        # ----------------------------------------------------------
+        # Phase 2: Retrain the best model on full 100% training data
+        # ----------------------------------------------------------
+        print(f"Phase 2: Retraining {model_name} on full data ({len(X_train)} rows)...")
+        best_model = random_search.best_estimator_
+        best_model.fit(X_train, y_train, **fit_params)
 
         # Evaluate the best model on the held-out test set
-        best_model = random_search.best_estimator_
         y_pred = best_model.predict(X_test)
-        auc = roc_auc_score(y_test, y_pred)   # Area Under ROC Curve
-        acc = accuracy_score(y_test, y_pred)   # Classification accuracy
-        print(f"{model_name} - AUC: {auc}, ACC: {acc}")
+        auc = roc_auc_score(y_test, y_pred)
+        acc = accuracy_score(y_test, y_pred)
+        print(f"{model_name} - AUC: {auc:.4f}, ACC: {acc:.4f}")
 
         # Append results and save progressively (so partial results survive crashes)
         result = pd.DataFrame({'Model': [model_name], 'AUC': [auc], 'ACC': [acc]})
         results_df = pd.concat([results_df, result], ignore_index=True)
-        results_df.to_csv('Classifier_results.csv', index=False)
+        results_df.to_csv(CSV_FILE, index=False)
 
     print('end')

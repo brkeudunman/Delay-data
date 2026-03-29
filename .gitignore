@@ -1,2 +1,4 @@
 .venv
 Datasets/Aeolus/*
+exp/Tab_exp/lightning_logs/*
+exp/Tab_exp/model_checkpoints/*

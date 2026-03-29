@@ -53,9 +53,9 @@ categorical_columns = [col for col in categorical_columns if col != 'FL_YEAR' an
 #   Train:      days 1–9
 #   Validation: days 10–12
 #   Test:       days 13+
-df_train = df[df['FL_DAY'] <= 9]
-df_vaild = df[(df['FL_DAY'] > 9) & (df['FL_DAY'] <= 12)]
-df_test = df[df['FL_DAY'] > 12]
+df_train = df[df['FL_DAY'] <= 9].copy()
+df_vaild = df[(df['FL_DAY'] > 9) & (df['FL_DAY'] <= 12)].copy()
+df_test = df[df['FL_DAY'] > 12].copy()
 
 # Separate features (X) and target (y) for each split.
 # Target: DEP_DELAY — departure delay in minutes (continuous value).
@@ -108,46 +108,48 @@ results_df = pd.DataFrame(columns=['Model', 'MSE', 'MAE'])
 # ============================================================
 # 6. TRAINING LOOP — RANDOMIZED SEARCH + EVALUATION
 # ============================================================
-for model_name, model in models.items():
-    print(f"RandomizedSearchCV for {model_name}...")
+if __name__ == '__main__':
+    for model_name, model in models.items():
+        print(f"RandomizedSearchCV for {model_name}...")
 
-    # Randomized hyperparameter search: tries 10 random combinations
-    # with 3-fold cross-validation, optimizing for negative MSE
-    # (sklearn convention: higher is better, so neg_MSE is used).
-    random_search = RandomizedSearchCV(
-        estimator=model,
-        param_distributions=param_dist,
-        n_iter=10,
-        cv=3,
-        scoring='neg_mean_squared_error',
-        random_state=42
-    )
+        # Randomized hyperparameter search: tries 10 random combinations
+        # with 3-fold cross-validation, optimizing for negative MSE
+        # (sklearn convention: higher is better, so neg_MSE is used).
+        random_search = RandomizedSearchCV(
+            estimator=model,
+            param_distributions=param_dist,
+            n_iter=10,
+            cv=3,
+            scoring='neg_mean_squared_error',
+            random_state=42
+        )
 
-    # Training parameters passed to mambular's .fit() method:
-    #   - max_epochs=100:  upper bound on training epochs
-    #   - patience=5:      early stopping — stop if no improvement for 5 epochs
-    #   - rebuild=True:    rebuild model for each hyperparameter combination
-    #   - X_val/y_val:     validation set for early stopping monitoring
-    fit_params = {"max_epochs": 100, "rebuild": True, "X_val": X_vaild, "y_val": y_vaild,
-                  "patience": 5}
+        # Training parameters passed to mambular's .fit() method:
+        #   - max_epochs=100:  upper bound on training epochs
+        #   - patience=5:      early stopping — stop if no improvement for 5 epochs
+        #   - rebuild=True:    rebuild model for each hyperparameter combination
+        #   - X_val/y_val:     validation set for early stopping monitoring
+        #   - num_workers=0:   prevent hanging on Windows
+        fit_params = {"max_epochs": 100, "rebuild": True, "X_val": X_vaild, "y_val": y_vaild,
+                      "patience": 5, "dataloader_kwargs": {"num_workers": 0}}
 
-    random_search.fit(X_train, y_train, **fit_params)
-    print("Best Parameters:", random_search.best_params_)
-    print("Best Score:", random_search.best_score_)
+        random_search.fit(X_train, y_train, **fit_params)
+        print("Best Parameters:", random_search.best_params_)
+        print("Best Score:", random_search.best_score_)
 
-    # Evaluate the best model on the held-out test set
-    best_model = random_search.best_estimator_
-    y_pred = best_model.predict(X_test)
+        # Evaluate the best model on the held-out test set
+        best_model = random_search.best_estimator_
+        y_pred = best_model.predict(X_test)
 
-    mse = mean_squared_error(y_test, y_pred)   # Mean Squared Error
-    mae = mean_absolute_error(y_test, y_pred)  # Mean Absolute Error
+        mse = mean_squared_error(y_test, y_pred)   # Mean Squared Error
+        mae = mean_absolute_error(y_test, y_pred)  # Mean Absolute Error
 
-    print(f"{model_name} - MSE: {mse}, MAE: {mae}")
+        print(f"{model_name} - MSE: {mse}, MAE: {mae}")
 
-    # Append results and save progressively (so partial results survive crashes)
-    result = pd.DataFrame({'Model': [model_name], 'MSE': [mse], 'MAE': [mae]})
+        # Append results and save progressively (so partial results survive crashes)
+        result = pd.DataFrame({'Model': [model_name], 'MSE': [mse], 'MAE': [mae]})
 
-    results_df = pd.concat([results_df, result], ignore_index=True)
-    results_df.to_csv('Regressor_results_DEP.csv', index=False)
+        results_df = pd.concat([results_df, result], ignore_index=True)
+        results_df.to_csv('Regressor_results_DEP.csv', index=False)
 
-print('end')
+    print('end')
