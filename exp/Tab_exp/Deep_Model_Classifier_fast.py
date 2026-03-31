@@ -27,6 +27,9 @@ import torch
 import os
 
 torch.set_float32_matmul_precision('high')
+torch._dynamo.config.suppress_errors = True
+torch.backends.cudnn.benchmark = True
+
 # ============================================================
 # 1. DATA LOADING
 # ============================================================
@@ -154,7 +157,8 @@ if __name__ == '__main__':
 
     fit_params = {"max_epochs": 100, "rebuild": True, "X_val": X_vaild, "y_val": y_vaild,
                   "patience": 5,
-                  "dataloader_kwargs": {"num_workers": 4, "persistent_workers": True},
+                  "batch_size": 512,
+                  "dataloader_kwargs": {"num_workers": 0, "pin_memory": True},
                   "accelerator": "gpu", "devices": 1, "precision": "16-mixed"}
 
     for model_name, model in models.items():
