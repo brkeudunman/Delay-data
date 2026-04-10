@@ -85,7 +85,7 @@ def main():
     input_folder = f"C:\\Users\\user\\Desktop\\tez\\git\\Delay-data\\Datasets\\Aeolus\\Flight_Tab"
     output_folder = os.path.join(input_folder, "Tab")
     # year_files = [f"flight_with_weather_{year}.csv" for year in range(2020, 2020)]
-    year_files = ["flight_with_weather_2020.csv"]
+    year_files = ["flight_with_weather_2024.csv"]
     for file_name in year_files:
         year = file_name.split("_")[-1].split(".")[0]  # Extract year
         file_path = os.path.join(input_folder, file_name)
