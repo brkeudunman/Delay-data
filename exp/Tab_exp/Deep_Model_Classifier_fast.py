@@ -25,6 +25,7 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import torch
 import os
+import shap
 
 torch.set_float32_matmul_precision('high')
 torch._dynamo.config.suppress_errors = True
@@ -119,10 +120,6 @@ models = {
     'MLP': MLPClassifier(d_model=128),
     'AutoInt': AutoIntClassifier(d_model=128, n_layers=4),
     'ResNet': ResNetClassifier(),
-    'FTTransformer': FTTransformerClassifier(d_model=128, n_layers=4),
-    'Tangos': TangosClassifier(d_model=128),
-    'TabulaRNN': TabulaRNNClassifier(d_model=128),
-    'SAINT': SAINTClassifier(d_model=128),
 }
 
 # Re-initialize results table (AUC + ACC on test set only)
@@ -205,4 +202,40 @@ if __name__ == '__main__':
         results_df = pd.concat([results_df, result], ignore_index=True)
         results_df.to_csv(CSV_FILE, index=False)
 
+         # ----------------------------------------------------------
+        # SHAP: Compute and save per-feature utility scores
+        # ----------------------------------------------------------
+        print(f"Computing SHAP values for {model_name}...")
+        try:
+            background = X_train.sample(n=100, random_state=42)
+
+            # KernelExplainer — model-agnostic, works with any Mambular model
+            # predict_proba[:, 1] = probability of delay class → utility signal
+            predict_fn = lambda x: best_model.predict_proba(
+                pd.DataFrame(x, columns=X_train.columns)
+            )[:, 1]
+
+            explainer = shap.KernelExplainer(predict_fn, background)
+
+            # Sample test set — KernelExplainer is slow on large sets
+            X_test_sample = X_test.sample(n=min(200, len(X_test)), random_state=42)
+            shap_values = explainer.shap_values(X_test_sample, nsamples=100)
+
+            # 1. Per-transaction SHAP (raw utility per feature per flight)
+            shap_df = pd.DataFrame(shap_values, columns=X_train.columns)
+            shap_df.insert(0, "model", model_name)
+            shap_df.insert(1, "sample_index", X_test_sample.index.values)
+            shap_df.to_csv(f"SHAP_{model_name}.csv", index=False)
+            print(f"  Saved SHAP_{model_name}.csv  {shap_df.shape}")
+
+            # 2. Global feature importance (mean |SHAP| across transactions)
+            mean_shap = pd.DataFrame({
+                "feature": X_train.columns,
+                "mean_abs_shap": np.abs(shap_values).mean(axis=0)
+            }).sort_values("mean_abs_shap", ascending=False)
+            mean_shap.to_csv(f"SHAP_{model_name}_importance.csv", index=False)
+            print(f"  Saved SHAP_{model_name}_importance.csv")
+
+        except Exception as e:
+            print(f"  SHAP failed for {model_name}: {e}")
     print('end')

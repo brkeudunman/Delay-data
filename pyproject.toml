@@ -11,6 +11,8 @@ dependencies = [
     "scikit-learn",
     "torch>=2.7.0",
     "mambular>=1.5.1",
+    "shap>=0.49.1",
+    "pami>=2026.1.19.1",
 ]
 
 [[tool.uv.index]]
