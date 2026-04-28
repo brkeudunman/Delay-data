@@ -14,6 +14,36 @@ This experiment combines **SHAP** (SHapley Additive exPlanations) with **High Ut
    - **Positive SHAP stream** → delay-driving patterns
    - **Negative SHAP stream** → delay-protecting patterns
 
+## Deep Dive: How Utility is Calculated
+
+In traditional Association Rule Mining (like Apriori), patterns are discovered based on *frequency* (support). High Utility Itemset Mining (HUIM), however, discovers patterns based on *Utility* (value/weight). **This methodology innovatively uses localized SHAP values as the "Utility" (profit/weight) of an item.**
+
+Because HUIM algorithms mathematically require all utility values to be strictly **positive**, but SHAP values can be positive (drive delay) or negative (prevent delay), the transactions are split into two separate databases: positive SHAP values (Delay Drivers) and absolute negative SHAP values (Delay Protectors).
+
+### 1. Local Item Utility (Single Flight)
+For every single flight (transaction), the local utility of a specific feature-value (item) is derived directly from its literal SHAP value for that specific prediction. Because HUIM requires integers, the SHAP value is scaled by 10,000 and converted to an integer.
+
+**Formula:**
+$$U(\text{item}_j, \text{flight}_i) = \text{int}(|\text{SHAP}_{i, j}| \times 10,000)$$
+
+For example, if the feature `O_Lon=VeryHigh` has a SHAP value of `+0.105` for a specific flight, its utility in that transaction is `1050`.
+
+### 2. Transaction Utility
+The total utility of a transaction (a single flight prediction) is simply the sum of all local item utilities present in that flight. A high transaction utility means the combined features heavily pushed the model's prediction in a specific direction.
+
+### 3. Pattern Utility (Global Rule)
+The algorithm searches for occurring combinations of items, such as `{Origin=JFK + O_Lon=VeryHigh}`. 
+The final Utility score of a pattern is the sum of the local utilities of *those specific items*, aggregated *only across flights where both items co-occurred*.
+
+**Pattern Utility Formula:**
+$$U(\text{Pattern}) = \sum_{\text{flight } \in \text{ flights containing Pattern}} \Big( \sum_{\text{item } \in \text{ Pattern}} U(\text{item, flight}) \Big)$$
+
+**What does a "Utility = 98K" mean?**
+If the pattern `Origin=JFK + O_Lon=VeryHigh` has a utility of **98K**, it indicates:
+1. **Frequency × Magnitude:** The pattern might happen very often with a moderate SHAP impact, or less often but with massive SHAP impacts.
+2. **Raw SHAP Equivalent:** Because of the 10,000 scaling factor, a utility of 98,000 equates to an aggregate absolute SHAP shift of roughly **9.8** across the 1,000 tested flights.
+3. **Additive Evidence:** It mathematically proves that when these specific states appear simultaneously, they jointly inject massive momentum into the neural network's final decision.
+
 ## Results Summary
 
 | Metric | Value |
@@ -26,7 +56,7 @@ This experiment combines **SHAP** (SHapley Additive exPlanations) with **High Ut
 
 ### SHAP Global Feature Importance
 
-| Rank | Feature | Mean |SHAP| |
+| Rank | Feature | Mean  |
 |------|---------|---------------|
 | 1 | O_LONGITUDE | 0.110 |
 | 2 | OP_CARRIER | 0.065 |
