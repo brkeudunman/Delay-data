@@ -80,7 +80,7 @@ df_list = [df_train, df_vaild, df_test]
 # 4. FEATURE METADATA FROM YAML
 # ============================================================
 # Load column type definitions (categorical vs continuous) from a config file.
-with open(os.path.join(MAIN_PATH, "data_info_2024.yaml"), "r") as yaml_file:
+with open(os.path.join(MAIN_PATH, "data_info_2020.yaml"), "r") as yaml_file:
     data_info = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
 categorical_columns = data_info["columns_info"]["Categorical Features"]
