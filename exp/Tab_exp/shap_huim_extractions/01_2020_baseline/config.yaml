@@ -1,0 +1,31 @@
+experiment:
+  name: "01_2020_baseline_shap_huim"
+  description: >
+    SHAP value extraction + HUIM pattern mining on 2020 flight data.
+    Produces delay-driver and delay-protector pattern CSVs used by model ablations.
+
+data:
+  year: 2020
+  file: "Flight_tab_2020.csv"
+  yaml_info: "data_info_2020.yaml"
+  train_days_max: 9      # FL_DAY <= 9  -> train (used for SHAP fitting)
+  val_days_max: 12
+  sample_frac: 0.1       # fraction of training data used for SHAP computation
+
+shap:
+  model: "RandomForest"  # base model for SHAP value extraction
+  n_estimators: 100
+  top_n_features: 10     # how many top features to keep for HUIM utility encoding
+
+huim:
+  min_utility_positive: 0.01   # minimum utility threshold for delay drivers
+  min_utility_negative: 0.01   # minimum utility threshold for delay protectors
+  n_bins: 5                    # KBinsDiscretizer bins for continuous features
+
+outputs:
+  csvs_dir: "csvs"       # relative to this experiment folder
+  txt_dir: "txt"
+  figures_dir: "figures"
+
+paths:
+  data_dir: "C:/Users/user/Desktop/tez/git/Delay-data/Datasets/Aeolus/Flight_Tab/Tab"

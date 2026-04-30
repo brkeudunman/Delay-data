@@ -19,7 +19,7 @@ import yaml
 from mambular.models import AutoIntClassifier, MLPClassifier, ResNetClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.preprocessing import KBinsDiscretizer, LabelEncoder
+from sklearn.preprocessing import KBinsDiscretizer
 
 warnings.filterwarnings("ignore")
 torch.set_float32_matmul_precision("high")
@@ -103,17 +103,23 @@ def preprocess(df_train, df_val, df_test, cat_cols, cont_cols, patterns):
         add_huim_features(split, patterns, cat_cols, cont_cols, discretizer)
 
     huim_cols = ["HUIM_" + p.replace(" + ", "_").replace("=", "_") for p in patterns]
-    print(f"Features: {len(huim_cols)} HUIM binary columns only")
 
-    # Encode binary columns as strings so LabelEncoder works uniformly
+    # mambular requires at least 1 numerical feature (num_features_list[0] crash otherwise).
+    # Cast to float so columns are treated as numerical, not ordinal categorical.
     for split in (df_train, df_val, df_test):
         for col in huim_cols:
-            le = LabelEncoder()
-            split[col] = le.fit_transform(split[col].astype(str))
+            split[col] = split[col].astype(float)
 
-    X_train = df_train[huim_cols];  y_train = df_train["ARR_DELAY"]
-    X_val   = df_val[huim_cols];    y_val   = df_val["ARR_DELAY"]
-    X_test  = df_test[huim_cols];   y_test  = df_test["ARR_DELAY"]
+    # Zero-variance filter: float columns with std=0 → mambular's StandardScaler → NaN.
+    # A pattern that never fires carries no information anyway.
+    variances = df_train[huim_cols].var()
+    valid_huim = [c for c in huim_cols if variances[c] > 1e-8]
+    print(f"  Features: {len(valid_huim)}/{len(huim_cols)} HUIM columns "
+          f"({len(huim_cols)-len(valid_huim)} zero-variance dropped)")
+
+    X_train = df_train[valid_huim];  y_train = df_train["ARR_DELAY"]
+    X_val   = df_val[valid_huim];    y_val   = df_val["ARR_DELAY"]
+    X_test  = df_test[valid_huim];   y_test  = df_test["ARR_DELAY"]
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
@@ -155,7 +161,10 @@ def main():
         "ResNet":  ResNetClassifier(),
     }
 
-    results_df = pd.read_csv(CSV_FILE) if CSV_FILE.exists() else pd.DataFrame(columns=["Model", "AUC", "ACC"])
+    results_df = pd.read_csv(CSV_FILE) if CSV_FILE.exists() else pd.DataFrame(
+        columns=["Model", "AUC", "ACC", "best_d_model", "best_n_layers", "best_lr"]
+    )
+    best_params_all = {}
 
     for model_name, model in models.items():
         if model_name in results_df["Model"].values:
@@ -170,7 +179,8 @@ def main():
             random_state=42, n_jobs=1,
         )
         search.fit(X_search, y_search, **fit_params)
-        print(f"Best params: {search.best_params_}")
+        bp = search.best_params_
+        print(f"Best params: {bp}")
 
         print(f"Phase 2: retrain on {len(X_train_p2)} rows...")
         best_model = search.best_estimator_
@@ -181,11 +191,23 @@ def main():
         acc = accuracy_score(y_test, y_pred)
         print(f"{model_name} — AUC: {auc:.4f}, ACC: {acc:.4f}")
 
-        results_df = pd.concat(
-            [results_df, pd.DataFrame({"Model": [model_name], "AUC": [auc], "ACC": [acc]})],
-            ignore_index=True,
-        )
+        row = pd.DataFrame({
+            "Model": [model_name], "AUC": [auc], "ACC": [acc],
+            "best_d_model": [bp.get("d_model")],
+            "best_n_layers": [bp.get("n_layers")],
+            "best_lr": [bp.get("lr")],
+        })
+        results_df = pd.concat([results_df, row], ignore_index=True)
         results_df.to_csv(CSV_FILE, index=False)
+
+        # Save best params per model to JSON (survives across runs)
+        best_params_all[model_name] = bp
+        import json
+        params_file = SCRIPT_DIR / "best_params.json"
+        existing = json.loads(params_file.read_text()) if params_file.exists() else {}
+        existing.update(best_params_all)
+        params_file.write_text(json.dumps(existing, indent=2))
+
         torch.cuda.empty_cache()
         gc.collect()
 
