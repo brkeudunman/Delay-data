@@ -1,48 +1,56 @@
 # SHAP × HUIM Experiment: Flight Delay Pattern Discovery
+## Experiment: `01_2024_baseline`
 
-## Overview
+> **Dataset:** `Flight_tab_2024.csv` · **Sample:** 10% · **Run:** `python run.py`
 
-This experiment combines **SHAP** (SHapley Additive exPlanations) with **High Utility Itemset Mining (HUIM)** to discover multi-feature delay patterns from a trained MLP classifier. Rather than examining features individually, this approach uncovers **combinations of conditions** that consistently drive or prevent flight delays.
+---
 
-## Method
+## Pipeline
 
-1. **Data**: 10% sample of Flight_tab_2024.csv (~616K rows)
-2. **Model**: MLP Classifier (Mambular) — binary delay prediction (|ARR_DELAY| > 15 min)
-3. **SHAP**: Computed on 1,000 test instances (200 background samples)
-4. **Discretization**: Continuous features → 5 quantile bins (VeryLow/Low/Mid/High/VeryHigh)
-5. **HUIM**: PAMI EFIM algorithm, split into:
-   - **Positive SHAP stream** → delay-driving patterns
-   - **Negative SHAP stream** → delay-protecting patterns
+```mermaid
+flowchart TD
+    A["Flight_tab_2024.csv\n(full dataset)"]
+    B["10% random sample\n~600K → ~60K rows"]
+    C["Time-based split\nTrain ≤ day 9 · Val 10-12 · Test 13+"]
+    D["MLP Classifier\nMambular · binary: |ARR_DELAY| > 15 min"]
+    E["SHAP KernelExplainer\n200 background · 1,000 test instances explained"]
+    F["Per-flight SHAP matrix\nshape: (1000, n_features)"]
+    G1["Positive SHAP stream\nfeatures that PUSHED toward delay"]
+    G2["Negative SHAP stream\nfeatures that PREVENTED delay"]
+    H["KBinsDiscretizer\ncontinuous → 5 bins\nVeryLow / Low / Mid / High / VeryHigh"]
+    I1["txt/shap_utility_positive.txt\nHUIM transaction DB"]
+    I2["txt/shap_utility_negative.txt\nHUIM transaction DB"]
+    J1["PAMI EFIM Mining\nmin_util = 90th percentile"]
+    J2["PAMI EFIM Mining\nmin_util = 90th percentile"]
+    K1["csvs/huim_delay_drivers.csv\nDelay-driving patterns"]
+    K2["csvs/huim_delay_protectors.csv\nDelay-protecting patterns"]
+    L["Model Ablations\nablations/03_shap_plus_huim\nablations/04_huim_only"]
 
-## Deep Dive: How Utility is Calculated
+    A --> B --> C --> D --> E --> F
+    F --> G1 & G2
+    G1 --> H --> I1 --> J1 --> K1
+    G2 --> H --> I2 --> J2 --> K2
+    K1 & K2 --> L
+```
 
-In traditional Association Rule Mining (like Apriori), patterns are discovered based on *frequency* (support). High Utility Itemset Mining (HUIM), however, discovers patterns based on *Utility* (value/weight). **This methodology innovatively uses localized SHAP values as the "Utility" (profit/weight) of an item.**
+---
 
-Because HUIM algorithms mathematically require all utility values to be strictly **positive**, but SHAP values can be positive (drive delay) or negative (prevent delay), the transactions are split into two separate databases: positive SHAP values (Delay Drivers) and absolute negative SHAP values (Delay Protectors).
+## How Utility is Calculated
 
-### 1. Local Item Utility (Single Flight)
-For every single flight (transaction), the local utility of a specific feature-value (item) is derived directly from its literal SHAP value for that specific prediction. Because HUIM requires integers, the SHAP value is scaled by 10,000 and converted to an integer.
+HUIM requires **positive integer utilities**. SHAP values are real-valued and can be positive or negative, so:
 
-**Formula:**
-$$U(\text{item}_j, \text{flight}_i) = \text{int}(|\text{SHAP}_{i, j}| \times 10,000)$$
+1. The SHAP matrix is **split into two streams** — positive SHAP (delay push) and negative SHAP (delay protection).
+2. Each feature-value pair becomes a **HUIM item**. Its local utility for a flight is:
 
-For example, if the feature `O_Lon=VeryHigh` has a SHAP value of `+0.105` for a specific flight, its utility in that transaction is `1050`.
+$$U(\text{item}_j, \text{flight}_i) = \text{int}(|\text{SHAP}_{i,j}| \times 10{,}000)$$
 
-### 2. Transaction Utility
-The total utility of a transaction (a single flight prediction) is simply the sum of all local item utilities present in that flight. A high transaction utility means the combined features heavily pushed the model's prediction in a specific direction.
+3. The **pattern utility** aggregates item utilities across all flights where the pattern co-occurs:
 
-### 3. Pattern Utility (Global Rule)
-The algorithm searches for occurring combinations of items, such as `{Origin=JFK + O_Lon=VeryHigh}`. 
-The final Utility score of a pattern is the sum of the local utilities of *those specific items*, aggregated *only across flights where both items co-occurred*.
+$$U(\text{Pattern}) = \sum_{\text{flight} \in \text{flights containing Pattern}} \sum_{\text{item} \in \text{Pattern}} U(\text{item, flight})$$
 
-**Pattern Utility Formula:**
-$$U(\text{Pattern}) = \sum_{\text{flight } \in \text{ flights containing Pattern}} \Big( \sum_{\text{item } \in \text{ Pattern}} U(\text{item, flight}) \Big)$$
+**Example:** `Origin=JFK + O_Longitude=VeryHigh` with utility **98K** means those two features, when appearing together, collectively pushed the model's output by an equivalent of **9.8 SHAP units** across the 1,000 explained flights.
 
-**What does a "Utility = 98K" mean?**
-If the pattern `Origin=JFK + O_Lon=VeryHigh` has a utility of **98K**, it indicates:
-1. **Frequency × Magnitude:** The pattern might happen very often with a moderate SHAP impact, or less often but with massive SHAP impacts.
-2. **Raw SHAP Equivalent:** Because of the 10,000 scaling factor, a utility of 98,000 equates to an aggregate absolute SHAP shift of roughly **9.8** across the 1,000 tested flights.
-3. **Additive Evidence:** It mathematically proves that when these specific states appear simultaneously, they jointly inject massive momentum into the neural network's final decision.
+---
 
 ## Results Summary
 
@@ -51,13 +59,13 @@ If the pattern `Origin=JFK + O_Lon=VeryHigh` has a utility of **98K**, it indica
 | MLP AUC | ~0.55 |
 | MLP Accuracy | ~0.59 |
 | SHAP instances explained | 1,000 |
-| Delay driver patterns mined | 9,566 |
-| Delay protector patterns mined | 69,062 |
+| Delay driver patterns | 9,566 |
+| Delay protector patterns | 69,062 |
 
 ### SHAP Global Feature Importance
 
-| Rank | Feature | Mean  |
-|------|---------|---------------|
+| Rank | Feature | Mean \|SHAP\| |
+|------|---------|--------------|
 | 1 | O_LONGITUDE | 0.110 |
 | 2 | OP_CARRIER | 0.065 |
 | 3 | CRS_ELAPSED_TIME | 0.063 |
@@ -67,50 +75,66 @@ If the pattern `Origin=JFK + O_Lon=VeryHigh` has a utility of **98K**, it indica
 
 ### Key Delay Driver Patterns
 
-Patterns pushing predictions **toward delay**:
-
 | Pattern | Utility | Interpretation |
 |---------|---------|----------------|
-| O_Longitude=VeryHigh | 540K | Northeast US origins dominate delays |
-| O_Lat=High + O_Lon=VeryHigh | 463K | NYC area airports |
-| Origin=JFK + O_Lon=VeryHigh | 98K | JFK-specific delay pattern |
-| Carrier=DL + O_Lon=VeryHigh | 98K | Delta at NE airports |
-| Elapsed=VeryHigh + O_Wind=VeryHigh + O_Lon=VeryHigh | 96K | Long-haul + high wind from NE |
-| DepTime=High + D_Temp=VeryHigh + O_Lon=VeryHigh | 95K | Late departure + heat + NE origin |
+| O_LONGITUDE=VeryHigh | 540K | Northeast US origins dominate delays |
+| O_LATITUDE=High + O_LONGITUDE=VeryHigh | 463K | NYC-area airports |
+| ORIGIN_INDEX=JFK + O_LONGITUDE=VeryHigh | 98K | JFK-specific delay pattern |
+| OP_CARRIER=DL + O_LONGITUDE=VeryHigh | 98K | Delta at Northeast airports |
+| CRS_ELAPSED_TIME=VeryHigh + O_WSPD=VeryHigh + O_LONGITUDE=VeryHigh | 96K | Long-haul + high wind from NE |
 
 ### Key Delay Protector Patterns
 
-Patterns pushing predictions **away from delay**:
-
 | Pattern | Utility | Interpretation |
 |---------|---------|----------------|
-| O_Temp=Mid | 96K | Moderate origin temperature |
-| O_Longitude=High | 98K | Non-extreme longitude (Midwest) |
-| Short flight + regional carrier (WN/OO) + Low precip | ~10K | Simple, short, clear-weather routes |
-| VeryLow departure time + Low wind + Low precip | ~10K | Early morning, calm weather |
-| Moderate climate + Low precipitation at both ends | ~10K | Clear weather at origin and destination |
+| O_TEMP=Mid | 96K | Moderate origin temperature |
+| O_LONGITUDE=High | 98K | Non-extreme longitude (Midwest) |
+| OP_CARRIER=WN + CRS_ELAPSED_TIME=VeryLow + O_PRCP=VeryLow | ~10K | Short SW route, clear weather |
+| CRS_ARR_TIME_MIN=VeryLow + O_PRCP=VeryLow + D_PRCP=VeryLow | ~10K | Early arrival, dry conditions |
+
+---
 
 ## Key Findings
 
-1. **Geography is the strongest signal**: Flights from Northeast US airports (O_LONGITUDE=VeryHigh) are the dominant delay driver, appearing in nearly every top pattern.
+1. **Geography is the strongest signal**: `O_LONGITUDE=VeryHigh` (Northeast US) appears in nearly every top delay-driver pattern.
+2. **Weather amplifies in combination**: Wind and temperature alone have moderate impact; combined with geography and scheduling they sharply increase delay risk.
+3. **Carrier-specific patterns**: Delta (DL) / American (AA) at NE airports = delay drivers; Southwest (WN) / SkyWest (OO) on short regional routes = protectors.
+4. **Actionable pattern size**: Top patterns contain 2–4 features — specific enough to act on, general enough to cover many flights.
+5. **Asymmetry**: ~7× more protector patterns (69K) than driver patterns (9.5K) — on-time performance has diffuse causes; delays are driven by fewer concentrated factors.
 
-2. **Weather amplifies in combination**: Wind speed and temperature alone have moderate impact, but combined with geography and scheduling they significantly increase delay risk.
+---
 
-3. **Carrier-specific patterns emerge**: Delta (DL) and American (AA) at Northeast airports are delay drivers; Southwest (WN) and SkyWest (OO) on short regional routes are protectors — reflecting different hub strategies.
+## Folder Structure
 
-4. **Actionable size**: The most interpretable patterns contain 2–4 features — specific enough to be actionable, general enough to cover many flights.
+```
+01_2024_baseline/
+├── config.yaml          ← experiment settings (data, SHAP, HUIM parameters)
+├── run.py               ← full extraction pipeline (config-driven)
+├── visualize.py         ← generates all figures from mined patterns
+├── README.md            ← this file
+├── csvs/
+│   ├── huim_delay_drivers.csv       ← mined delay-driving patterns
+│   ├── huim_delay_protectors.csv    ← mined delay-protecting patterns
+│   ├── shap_feature_importance.csv  ← global SHAP feature ranking
+│   └── huim_item_labels.csv         ← item ID → human-readable label
+├── txt/
+│   ├── shap_utility_positive.txt    ← HUIM transaction DB (delay drivers)
+│   └── shap_utility_negative.txt    ← HUIM transaction DB (delay protectors)
+└── figures/
+    ├── 01_shap_feature_importance.png
+    ├── 02_top15_delay_drivers.png
+    ├── 03_top15_delay_protectors.png
+    ├── 04_pattern_size_distribution.png
+    └── 05_drivers_vs_protectors.png
+```
 
-5. **Positive vs negative asymmetry**: There are ~7× more protector patterns (69K) than driver patterns (9.5K), suggesting on-time performance has more diffuse causes while delay concentration is driven by fewer, stronger factors.
+---
 
-## Files
+## Downstream Usage
 
-| File | Description |
-|------|-------------|
-| `huim_delay_drivers.csv` | All mined delay-driving patterns |
-| `huim_delay_protectors.csv` | All mined delay-protecting patterns |
-| `shap_feature_importance.csv` | SHAP global feature ranking |
-| `huim_item_labels.csv` | Item ID → human-readable label mapping |
-| `shap_utility_positive.txt` | HUIM transaction DB (positive SHAP) |
-| `shap_utility_negative.txt` | HUIM transaction DB (negative SHAP) |
-| `visualize_results.py` | Generates all figures |
-| `figures/` | Generated visualization figures |
+The mined CSVs are consumed by the model ablation experiments:
+
+| Ablation | Uses |
+|----------|------|
+| `ablations/03_shap_plus_huim/` | `csvs/huim_delay_drivers.csv` + `csvs/huim_delay_protectors.csv` |
+| `ablations/04_huim_only/` | same CSVs, as the **only** features |

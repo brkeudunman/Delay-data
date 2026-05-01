@@ -36,8 +36,8 @@ features:
   top_drivers_n: 20
   top_protectors_n: 20
   n_bins: 5
-  drivers_file: "../../shap_huim_extractions/01_2020_baseline/csvs/huim_delay_drivers.csv"
-  protectors_file: "../../shap_huim_extractions/01_2020_baseline/csvs/huim_delay_protectors.csv"
+  drivers_file: "../../shap_huim_extractions/01_2024_baseline/csvs/huim_delay_drivers.csv"
+  protectors_file: "../../shap_huim_extractions/01_2024_baseline/csvs/huim_delay_protectors.csv"
   exclude_cols: []
 
 paths:
