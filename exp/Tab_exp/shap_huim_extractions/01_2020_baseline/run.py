@@ -1,22 +1,26 @@
 """
-SHAP_HUIM_experiment.py
-========================
-Standalone experiment: Use SHAP values as utility values for
+run.py  —  SHAP + HUIM Extraction
+===================================
+Config-driven experiment: use SHAP values as utility values for
 High Utility Itemset Mining (HUIM) to discover combinatorial
 delay-driving and delay-protecting feature patterns.
 
 Pipeline:
-  1. Load 10% of Flight_tab_2024.csv
+  1. Load sample_frac of data (year set in config.yaml)
   2. Train MLP classifier (binary: |ARR_DELAY| > 15 min)
-  3. Compute SHAP values on a minimal test subsample
+  3. Compute SHAP values
   4. Discretize features → items
   5. Build HUIM transaction databases (positive & negative SHAP streams)
   6. Mine with PAMI EFIM
-  7. Output delay-driver and delay-protector patterns
+  7. Save outputs to csvs/ and txt/ subdirs
+
+Run:
+    python run.py
 """
 
 import os
 import warnings
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -28,18 +32,29 @@ from sklearn.metrics import roc_auc_score, accuracy_score
 warnings.filterwarnings("ignore")
 
 # ============================================================
-# 1. CONFIGURATION
+# 1. CONFIGURATION — read from config.yaml
 # ============================================================
-MAIN_PATH = (
-    "C:\\Users\\user\\Desktop\\tez\\git\\Delay-data\\Datasets\\Aeolus\\Flight_Tab\\Tab"
-)
-FILE_NAME = "Flight_tab_2024.csv"
-DATA_FRAC = 0.1          # Use 10% of data
-SHAP_BG_SAMPLES = 200    # Background samples for SHAP explainer
-SHAP_TEST_SAMPLES = 1000 # Test instances to explain
-N_BINS = 5               # Quantile bins for continuous features
-SHAP_SCALE = 10000       # Scale factor: SHAP floats → integers for HUIM
-OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = Path(__file__).parent
+with open(SCRIPT_DIR / "config.yaml", "r") as _f:
+    cfg = yaml.safe_load(_f)
+
+MAIN_PATH         = cfg["paths"]["data_dir"]
+FILE_NAME         = cfg["data"]["file"]
+DATA_INFO_FILE    = cfg["data"]["yaml_info"]
+DATA_FRAC         = cfg["data"]["sample_frac"]
+SHAP_BG_SAMPLES   = cfg["shap"].get("bg_samples", 200)
+SHAP_TEST_SAMPLES = cfg["shap"].get("test_samples", 1000)
+N_BINS            = cfg["huim"]["n_bins"]
+SHAP_SCALE        = cfg["huim"].get("shap_scale", 10000)
+MIN_UTIL_PCTILE   = cfg["huim"].get("min_util_percentile", 90)
+
+CSVS_DIR = SCRIPT_DIR / cfg["outputs"]["csvs_dir"]
+TXT_DIR  = SCRIPT_DIR / cfg["outputs"]["txt_dir"]
+CSVS_DIR.mkdir(exist_ok=True)
+TXT_DIR.mkdir(exist_ok=True)
+
+print(f"Experiment : {cfg['experiment']['name']}")
+print(f"Data file  : {FILE_NAME}  (sample_frac={DATA_FRAC})")
 
 # ============================================================
 # 2. DATA LOADING (10% sample)
@@ -57,7 +72,7 @@ print(f"  Loaded {len(df)} rows (10% sample)")
 # ============================================================
 # 3. FEATURE METADATA
 # ============================================================
-with open(os.path.join(MAIN_PATH, "data_info_2024.yaml"), "r") as f:
+with open(os.path.join(MAIN_PATH, DATA_INFO_FILE), "r") as f:
     data_info = yaml.load(f, Loader=yaml.FullLoader)
 
 categorical_columns = data_info["columns_info"]["Categorical Features"]
@@ -299,9 +314,9 @@ def build_utility_transactions(X_explain_df, X_explain_disc, shap_vals, mode="po
 pos_lines = build_utility_transactions(X_explain, X_explain_disc, shap_values, mode="positive")
 neg_lines = build_utility_transactions(X_explain, X_explain_disc, shap_values, mode="negative")
 
-# Write to files
-pos_file = os.path.join(OUTPUT_DIR, "shap_utility_positive.txt")
-neg_file = os.path.join(OUTPUT_DIR, "shap_utility_negative.txt")
+# Write to txt/ subdir
+pos_file = str(TXT_DIR / "shap_utility_positive.txt")
+neg_file = str(TXT_DIR / "shap_utility_negative.txt")
 
 with open(pos_file, "w") as f:
     f.write("\n".join(pos_lines))
@@ -321,7 +336,7 @@ print("=" * 60)
 from PAMI.highUtilityPattern.basic import EFIM
 
 
-def mine_patterns(input_file, label, min_util_percentile=90):
+def mine_patterns(input_file, label, min_util_percentile=MIN_UTIL_PCTILE):
     """
     Run EFIM on a utility transaction file.
     Automatically determines minUtil from the data distribution.
@@ -403,12 +418,12 @@ print("  STEP 7: Saving results")
 print("=" * 60)
 
 if not drivers_df.empty:
-    out = os.path.join(OUTPUT_DIR, "huim_delay_drivers.csv")
+    out = CSVS_DIR / "huim_delay_drivers.csv"
     drivers_df.to_csv(out, index=False)
     print(f"  Saved: {out} ({len(drivers_df)} patterns)")
 
 if not protectors_df.empty:
-    out = os.path.join(OUTPUT_DIR, "huim_delay_protectors.csv")
+    out = CSVS_DIR / "huim_delay_protectors.csv"
     protectors_df.to_csv(out, index=False)
     print(f"  Saved: {out} ({len(protectors_df)} patterns)")
 
@@ -416,10 +431,10 @@ if not protectors_df.empty:
 label_df = pd.DataFrame([
     {"ItemID": k, "Label": v} for k, v in item_label_map.items()
 ]).sort_values("ItemID")
-label_df.to_csv(os.path.join(OUTPUT_DIR, "huim_item_labels.csv"), index=False)
+label_df.to_csv(CSVS_DIR / "huim_item_labels.csv", index=False)
 
 # Save SHAP importance for reference
-importance_df.to_csv(os.path.join(OUTPUT_DIR, "shap_feature_importance.csv"), index=False)
+importance_df.to_csv(CSVS_DIR / "shap_feature_importance.csv", index=False)
 
 print("\n" + "=" * 60)
 print("  EXPERIMENT COMPLETE")
