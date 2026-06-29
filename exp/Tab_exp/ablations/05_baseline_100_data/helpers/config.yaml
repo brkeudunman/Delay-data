@@ -1,0 +1,30 @@
+experiment:
+  name: "export_raw_for_llm"
+  description: >
+    Export a small set of RAW (un-encoded) flight rows for LLM prompting.
+    No model training. Samples N rows from the train-day split, keeps the
+    original human-readable values (carrier/airport codes, scheduled times,
+    weather, coordinates) and appends raw ARR_DELAY + a binary DELAYED label.
+
+data:
+  year: 2020
+  file: "Flight_tab_2020.csv"
+  yaml_info: "data_info_2020.yaml"
+  train_days_max: 9          # sample only from FL_DAY <= 9 (train days)
+
+export:
+  n_rows: 100                # go lower/higher here; 43% base rate stays balanced
+  random_state: 42
+  target_col: "ARR_DELAY"
+  delay_threshold: 15        # DELAYED = (|ARR_DELAY| > 15)
+
+features:
+  # dropped: FLIGHTS (always 1), FL_YEAR (always 2020), FL_MONTH (per project rules).
+  # DEP_DELAY is intentionally NOT exported as a feature — it leaks the target.
+  exclude_cols: ["FLIGHTS", "FL_YEAR", "FL_MONTH"]
+
+output:
+  csv: "../output/llm_sample_raw.csv"
+
+paths:
+  data_dir: "C:/Users/user/Desktop/tez/git/Delay-data/Datasets/Aeolus/Flight_Tab/Tab"
