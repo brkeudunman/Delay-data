@@ -1,0 +1,20 @@
+Feature,LLM_Score,LLM_Score_std,Reasoning
+CRS_ELAPSED_TIME,0.7666666666666666,0.062360956446232366,Flight duration is strongly correlated with delays as longer flights have more opportunities to accumulate delay.
+ORIGIN_INDEX,0.75,0.04082482904638634,Airports can have different baseline delay rates and congestion levels which are strong indicators of flight delays.
+CRS_ARR_TIME_MIN,0.7333333333333334,0.08498365855987973,"CRS_ARR_TIME_MIN is closely related to flight delays as it indicates when a flight is expected to arrive, making it highly predictive of whether a flight will be delayed."
+O_PRCP,0.65,0.08164965809277258,Precipitation can significantly impact flight delays due to runway conditions and aircraft performance.
+FL_WEEK,0.6333333333333333,0.08498365855987973,Weekends and weekdays have different travel patterns with weekends often having more leisure flights which are less likely to be delayed compared to weekday business flights.
+DEST_INDEX,0.6333333333333333,0.10274023338281628,"The destination airport can significantly impact arrival congestion and slot constraints, which are relevant to delays."
+D_PRCP,0.6166666666666667,0.10274023338281628,Rain or snow at the destination can significantly impact flight delays due to runway conditions or aircraft performance.
+CRS_DEP_TIME_MIN,0.6,0.07071067811865477,"Departure times later in the day often inherit accumulated delays, making them more likely to be delayed."
+OP_CARRIER,0.5833333333333334,0.09428090415820634,Different operating airlines have varying on-time performance and scheduling practices which can significantly impact flight delays.
+O_WSPD,0.5833333333333334,0.09428090415820634,Wind speed at the origin airport can significantly impact flight delays due to its effect on ground operations and takeoffs.
+D_WSPD,0.3666666666666667,0.08498365855987976,Wind speed can significantly impact flight delays due to turbulence or runway congestion.
+O_LATITUDE,0.3,0.10801234497346433,Latitude can provide some regional context but is not as predictive of delays compared to other more direct factors like weather or airline-specific operations.
+O_TEMP,0.23333333333333336,0.11785113019775792,Air temperature has a minor impact on flight delays as other factors like traffic and maintenance are more significant.
+D_TEMP,0.21666666666666667,0.09428090415820632,Temperature variations can affect flight operations but are not a primary determinant of delays.
+O_LONGITUDE,0.16666666666666666,0.02357022603955159,Longitude shows some regional patterns but is highly correlated with latitude and does not capture enough unique information to be very predictive of delays.
+D_LATITUDE,0.16666666666666666,0.02357022603955159,Latitude has a weak relationship with flight delays as delays are more influenced by factors like weather and air traffic control.
+D_LONGITUDE,0.16666666666666666,0.02357022603955159,Longitude has a weak correlation with flight delays as delays are more influenced by factors like weather and air traffic control.
+OP_CARRIER_FL_NUM,0.13333333333333333,0.02357022603955158,The flight number does not contain enough information to be highly predictive of delays.
+FL_DAY,0.13333333333333333,0.02357022603955158,FL_DAY shows some variation in delays but is not highly predictive due to many other factors affecting flight delays.

@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER",
+  "rep": 1,
+  "score": 0.45,
+  "reasoning": "The airline carrier can significantly impact flight operations and delays due to scheduling practices, aircraft maintenance, and crew availability.",
+  "raw": "{\"score\": 0.45, \"reasoning\": \"The airline carrier can significantly impact flight operations and delays due to scheduling practices, aircraft maintenance, and crew availability.\"}"
+}

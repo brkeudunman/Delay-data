@@ -1,0 +1,7 @@
+{
+  "feature": "O_TEMP",
+  "rep": 1,
+  "score": 0.25,
+  "reasoning": "Temperature may slightly affect flight operations but is not a primary factor.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"Temperature may slightly affect flight operations but is not a primary factor.\"}"
+}

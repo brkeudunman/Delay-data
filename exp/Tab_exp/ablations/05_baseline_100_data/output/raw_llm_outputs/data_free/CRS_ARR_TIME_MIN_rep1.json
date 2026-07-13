@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ARR_TIME_MIN",
+  "rep": 1,
+  "score": 0.5,
+  "reasoning": "It provides timing context but not direct information about delay causes or conditions.",
+  "raw": "{\"score\": 0.5, \"reasoning\": \"It provides timing context but not direct information about delay causes or conditions.\"}"
+}

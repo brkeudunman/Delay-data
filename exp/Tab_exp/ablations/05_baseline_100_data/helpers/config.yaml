@@ -26,5 +26,27 @@ features:
 output:
   csv: "../output/llm_sample_raw.csv"
 
+# ── LLM-Select (LLM-Score) feature selection ─────────────────────────────────
+# Method from taekb/llm-select (Jeong et al., TMLR 2025). LLM-Score asks the LLM
+# for an independent 0-1 importance score per feature. We run two prompt variants
+# and compare them:
+#   - data_free:     feature name + description + task context only (paper-faithful)
+#   - data_informed: same, plus the 100 sample rows from llm_sample_raw.csv in-context
+# All paths below are relative to this config file's directory (helpers/), matching
+# the existing `output.csv: "../output/..."` convention.
+llm_select:
+  method: "llm_score"
+  model: "qwen2.5:7b"
+  ollama_host: "http://localhost:11434"
+  variants: ["data_free", "data_informed"]
+  n_repeats: 3                 # queries per feature; scores aggregated as mean +/- std
+  temperature: 0.5
+  request_timeout: 120         # seconds per Ollama call
+  max_data_rows: 100           # sample rows injected for the data_informed variant
+  target_description: "whether a US domestic flight is delayed, defined as absolute arrival delay |ARR_DELAY| > 15 minutes"
+  feature_desc_file: "feature_descriptions.yaml"   # in helpers/
+  sample_file: "../output/llm_sample_raw.csv"
+  out_dir: "../output"
+
 paths:
   data_dir: "C:/Users/user/Desktop/tez/git/Delay-data/Datasets/Aeolus/Flight_Tab/Tab"

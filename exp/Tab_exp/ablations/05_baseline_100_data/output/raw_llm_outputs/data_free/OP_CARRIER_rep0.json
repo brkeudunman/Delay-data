@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER",
+  "rep": 0,
+  "score": 0.75,
+  "reasoning": "Different airlines have varying punctuality rates and operational practices.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Different airlines have varying punctuality rates and operational practices.\"}"
+}

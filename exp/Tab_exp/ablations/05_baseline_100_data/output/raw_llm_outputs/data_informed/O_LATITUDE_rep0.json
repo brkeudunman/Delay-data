@@ -1,0 +1,7 @@
+{
+  "feature": "O_LATITUDE",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Latitude can provide some regional context but is not as predictive of delays compared to other more direct factors like weather or airline-specific operations.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Latitude can provide some regional context but is not as predictive of delays compared to other more direct factors like weather or airline-specific operations.\"}"
+}

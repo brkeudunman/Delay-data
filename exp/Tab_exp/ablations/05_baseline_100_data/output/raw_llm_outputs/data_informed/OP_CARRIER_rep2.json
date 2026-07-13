@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER",
+  "rep": 2,
+  "score": 0.65,
+  "reasoning": "Operating carrier can significantly influence flight delays due to differences in operational practices and maintenance.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"Operating carrier can significantly influence flight delays due to differences in operational practices and maintenance.\"}"
+}

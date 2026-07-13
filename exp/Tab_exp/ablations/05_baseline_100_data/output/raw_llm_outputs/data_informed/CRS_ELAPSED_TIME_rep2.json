@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ELAPSED_TIME",
+  "rep": 2,
+  "score": 0.7,
+  "reasoning": "Flight duration is a strong indicator of potential delays due to weather, air traffic, and other factors that can disproportionately affect longer flights.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"Flight duration is a strong indicator of potential delays due to weather, air traffic, and other factors that can disproportionately affect longer flights.\"}"
+}

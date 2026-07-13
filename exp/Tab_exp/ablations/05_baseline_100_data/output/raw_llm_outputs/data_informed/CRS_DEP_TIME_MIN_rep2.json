@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_DEP_TIME_MIN",
+  "rep": 2,
+  "score": 0.65,
+  "reasoning": "Departure time is closely related to delays as flights later in the day may accumulate more upstream delays.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"Departure time is closely related to delays as flights later in the day may accumulate more upstream delays.\"}"
+}

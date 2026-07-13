@@ -1,0 +1,7 @@
+{
+  "feature": "ORIGIN_INDEX",
+  "rep": 2,
+  "score": 0.7,
+  "reasoning": "Different airports have varying baseline delay rates and congestion levels which are strong indicators of flight delays.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"Different airports have varying baseline delay rates and congestion levels which are strong indicators of flight delays.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "D_LATITUDE",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "Latitude may have some indirect influence but is not a primary determinant of flight delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Latitude may have some indirect influence but is not a primary determinant of flight delays.\"}"
+}

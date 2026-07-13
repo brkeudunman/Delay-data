@@ -1,0 +1,7 @@
+{
+  "feature": "D_LONGITUDE",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "Longitude has a weak relationship with flight delays as geographic longitude does not directly influence weather or operational factors that typically cause delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Longitude has a weak relationship with flight delays as geographic longitude does not directly influence weather or operational factors that typically cause delays.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "O_LONGITUDE",
+  "rep": 1,
+  "score": 0.2,
+  "reasoning": "Longitude has a weak correlation with flight delays as geographic location is not a direct cause of delay.",
+  "raw": "{\"score\": 0.2, \"reasoning\": \"Longitude has a weak correlation with flight delays as geographic location is not a direct cause of delay.\"}"
+}

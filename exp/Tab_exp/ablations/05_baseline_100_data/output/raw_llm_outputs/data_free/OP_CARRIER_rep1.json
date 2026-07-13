@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER",
+  "rep": 1,
+  "score": 0.65,
+  "reasoning": "Operating carriers have varying on-time performance due to operational practices.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"Operating carriers have varying on-time performance due to operational practices.\"}"
+}

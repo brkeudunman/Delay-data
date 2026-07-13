@@ -1,0 +1,7 @@
+{
+  "feature": "D_WSPD",
+  "rep": 2,
+  "score": 0.35,
+  "reasoning": "Wind speed can moderately affect flight times and arrivals.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Wind speed can moderately affect flight times and arrivals.\"}"
+}

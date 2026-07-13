@@ -1,0 +1,7 @@
+{
+  "feature": "D_TEMP",
+  "rep": 2,
+  "score": 0.35,
+  "reasoning": "Air temperature can sometimes correlate with flight delays due to weather but is not a direct cause.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Air temperature can sometimes correlate with flight delays due to weather but is not a direct cause.\"}"
+}

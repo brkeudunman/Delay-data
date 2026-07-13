@@ -1,0 +1,7 @@
+{
+  "feature": "O_LATITUDE",
+  "rep": 2,
+  "score": 0.35,
+  "reasoning": "Latitude can provide some information about regional weather patterns that affect flight delays, but it is not as predictive as other features like weather conditions or carrier-specific factors.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Latitude can provide some information about regional weather patterns that affect flight delays, but it is not as predictive as other features like weather conditions or carrier-specific factors.\"}"
+}

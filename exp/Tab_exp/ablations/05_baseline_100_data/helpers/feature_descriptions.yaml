@@ -1,0 +1,96 @@
+# Plain-English feature metadata for LLM-Select (LLM-Score) prompting.
+# The raw column names are cryptic, so each feature gets a human-readable
+# description + unit + type. This is the ONLY semantic signal the data-free
+# variant sees; the data-informed variant also gets the 100 sample rows.
+#
+# Feature set = the 19 columns in output/llm_sample_raw.csv (FLIGHTS, FL_YEAR,
+# FL_MONTH excluded per project rules; DEP_DELAY excluded — it leaks the target).
+
+OP_CARRIER:
+  type: categorical
+  description: "Operating airline carrier code (e.g., WN=Southwest, DL=Delta, AA=American). Airlines differ in scheduling buffers and on-time reliability."
+
+OP_CARRIER_FL_NUM:
+  type: categorical
+  description: "Flight number assigned by the carrier. Primarily an identifier for the route/rotation; on its own it carries little predictive signal."
+
+FL_DAY:
+  type: categorical
+  description: "Day of the month (1-31) on which the flight is scheduled."
+
+FL_WEEK:
+  type: categorical
+  description: "Day of the week (1-7). Captures weekday vs. weekend demand and business-travel patterns."
+
+ORIGIN_INDEX:
+  type: categorical
+  description: "Identity of the origin airport (encoded from its airport code). Airports differ widely in congestion and baseline delay rates."
+
+DEST_INDEX:
+  type: categorical
+  description: "Identity of the destination airport (encoded from its airport code). Arrival congestion and slot constraints vary by airport."
+
+CRS_DEP_TIME_MIN:
+  type: continuous
+  unit: "minutes since midnight (local)"
+  description: "Scheduled departure time. Flights later in the day inherit accumulated upstream delays, so departure time is often predictive."
+
+CRS_ARR_TIME_MIN:
+  type: continuous
+  unit: "minutes since midnight (local)"
+  description: "Scheduled arrival time at the destination."
+
+CRS_ELAPSED_TIME:
+  type: continuous
+  unit: "minutes"
+  description: "Scheduled gate-to-gate flight duration. A proxy for route distance; longer flights have more room to absorb or accumulate delay."
+
+O_TEMP:
+  type: continuous
+  unit: "degrees Celsius"
+  description: "Air temperature at the origin airport around departure time."
+
+O_PRCP:
+  type: continuous
+  unit: "millimeters"
+  description: "Precipitation (rain/snow) at the origin airport around departure. Bad origin weather is a classic delay driver."
+
+O_WSPD:
+  type: continuous
+  unit: "km/h"
+  description: "Wind speed at the origin airport around departure. High winds slow departures and ground operations."
+
+D_TEMP:
+  type: continuous
+  unit: "degrees Celsius"
+  description: "Air temperature at the destination airport around arrival time."
+
+D_PRCP:
+  type: continuous
+  unit: "millimeters"
+  description: "Precipitation (rain/snow) at the destination airport around arrival."
+
+D_WSPD:
+  type: continuous
+  unit: "km/h"
+  description: "Wind speed at the destination airport around arrival."
+
+O_LATITUDE:
+  type: continuous
+  unit: "degrees"
+  description: "Latitude of the origin airport. A geographic coordinate; a rough proxy for region/climate."
+
+O_LONGITUDE:
+  type: continuous
+  unit: "degrees"
+  description: "Longitude of the origin airport. A geographic coordinate; a rough proxy for region and time zone."
+
+D_LATITUDE:
+  type: continuous
+  unit: "degrees"
+  description: "Latitude of the destination airport."
+
+D_LONGITUDE:
+  type: continuous
+  unit: "degrees"
+  description: "Longitude of the destination airport."

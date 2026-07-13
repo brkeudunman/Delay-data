@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_DEP_TIME_MIN",
+  "rep": 1,
+  "score": 0.5,
+  "reasoning": "The feature shows a mix of delayed and on-time flights across different departure times, suggesting it has moderate predictive power.",
+  "raw": "{\"score\": 0.5, \"reasoning\": \"The feature shows a mix of delayed and on-time flights across different departure times, suggesting it has moderate predictive power.\"}"
+}

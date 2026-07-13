@@ -1,0 +1,7 @@
+{
+  "feature": "O_TEMP",
+  "rep": 0,
+  "score": 0.35,
+  "reasoning": "Temperature can indirectly affect flight delays but is not a primary factor.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Temperature can indirectly affect flight delays but is not a primary factor.\"}"
+}

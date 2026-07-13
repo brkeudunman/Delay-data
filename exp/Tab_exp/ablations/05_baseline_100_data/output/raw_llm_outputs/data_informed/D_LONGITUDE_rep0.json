@@ -1,0 +1,7 @@
+{
+  "feature": "D_LONGITUDE",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Longitude has a weak correlation with flight delays as delays are more influenced by factors like weather and air traffic control.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Longitude has a weak correlation with flight delays as delays are more influenced by factors like weather and air traffic control.\"}"
+}

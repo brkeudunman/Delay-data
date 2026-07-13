@@ -1,0 +1,7 @@
+{
+  "feature": "FL_DAY",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "FL_DAY has some predictive power as certain days may have more variability in delays due to weather or other factors, but it is not highly predictive across all days.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"FL_DAY has some predictive power as certain days may have more variability in delays due to weather or other factors, but it is not highly predictive across all days.\"}"
+}

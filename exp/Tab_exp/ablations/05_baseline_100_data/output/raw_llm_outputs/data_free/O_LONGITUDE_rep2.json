@@ -1,0 +1,7 @@
+{
+  "feature": "O_LONGITUDE",
+  "rep": 2,
+  "score": 0.2,
+  "reasoning": "While it can provide some regional context, it is not as predictive as more direct delay-related features.",
+  "raw": "{\"score\": 0.2, \"reasoning\": \"While it can provide some regional context, it is not as predictive as more direct delay-related features.\"}"
+}

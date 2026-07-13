@@ -1,0 +1,7 @@
+{
+  "feature": "O_LONGITUDE",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "Longitude provides some regional context but is less predictive of delays compared to other features like weather or carrier-specific data.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Longitude provides some regional context but is less predictive of delays compared to other features like weather or carrier-specific data.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_DEP_TIME_MIN",
+  "rep": 0,
+  "score": 0.65,
+  "reasoning": "Departure times later in the day often inherit accumulated delays, making them more likely to be delayed.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"Departure times later in the day often inherit accumulated delays, making them more likely to be delayed.\"}"
+}

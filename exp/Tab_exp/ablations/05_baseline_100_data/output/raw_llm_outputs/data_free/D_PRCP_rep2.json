@@ -1,0 +1,7 @@
+{
+  "feature": "D_PRCP",
+  "rep": 2,
+  "score": 0.6,
+  "reasoning": "Precipitation can significantly impact flight delays due to runway conditions and aircraft performance.",
+  "raw": "{\"score\": 0.6, \"reasoning\": \"Precipitation can significantly impact flight delays due to runway conditions and aircraft performance.\"}"
+}

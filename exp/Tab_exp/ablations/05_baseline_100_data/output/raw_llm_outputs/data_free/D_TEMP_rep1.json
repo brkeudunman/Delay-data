@@ -1,0 +1,7 @@
+{
+  "feature": "D_TEMP",
+  "rep": 1,
+  "score": 0.25,
+  "reasoning": "Air temperature has limited direct impact on flight delays.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"Air temperature has limited direct impact on flight delays.\"}"
+}

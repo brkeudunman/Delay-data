@@ -1,0 +1,7 @@
+{
+  "feature": "FL_DAY",
+  "rep": 1,
+  "score": 0.25,
+  "reasoning": "It has a moderate predictive power as day of the month may correlate with traffic patterns but not uniquely identify delays.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"It has a moderate predictive power as day of the month may correlate with traffic patterns but not uniquely identify delays.\"}"
+}

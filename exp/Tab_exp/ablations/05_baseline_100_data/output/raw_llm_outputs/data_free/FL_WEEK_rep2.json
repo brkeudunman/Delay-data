@@ -1,0 +1,7 @@
+{
+  "feature": "FL_WEEK",
+  "rep": 2,
+  "score": 0.65,
+  "reasoning": "Weekday versus weekend can significantly impact travel patterns and demand.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"Weekday versus weekend can significantly impact travel patterns and demand.\"}"
+}

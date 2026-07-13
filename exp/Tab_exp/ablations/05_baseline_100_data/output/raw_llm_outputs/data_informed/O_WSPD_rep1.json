@@ -1,0 +1,7 @@
+{
+  "feature": "O_WSPD",
+  "rep": 1,
+  "score": 0.45,
+  "reasoning": "Wind speed at origin can significantly impact flight operations and delays.",
+  "raw": "{\"score\": 0.45, \"reasoning\": \"Wind speed at origin can significantly impact flight operations and delays.\"}"
+}

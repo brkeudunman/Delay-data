@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ELAPSED_TIME",
+  "rep": 1,
+  "score": 0.7,
+  "reasoning": "It provides a relevant proxy for route complexity and potential delay accumulation.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"It provides a relevant proxy for route complexity and potential delay accumulation.\"}"
+}

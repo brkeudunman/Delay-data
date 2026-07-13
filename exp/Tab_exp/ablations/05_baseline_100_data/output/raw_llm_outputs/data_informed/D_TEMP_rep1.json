@@ -1,0 +1,7 @@
+{
+  "feature": "D_TEMP",
+  "rep": 1,
+  "score": 0.35,
+  "reasoning": "Air temperature at destination has some correlation with delays but is not a primary factor.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Air temperature at destination has some correlation with delays but is not a primary factor.\"}"
+}

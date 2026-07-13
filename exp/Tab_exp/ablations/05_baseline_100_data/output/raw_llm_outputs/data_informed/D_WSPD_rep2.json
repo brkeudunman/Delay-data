@@ -1,0 +1,7 @@
+{
+  "feature": "D_WSPD",
+  "rep": 2,
+  "score": 0.4,
+  "reasoning": "Wind speed can significantly impact flight delays due to its effect on aircraft performance and runway operations.",
+  "raw": "{\"score\": 0.4, \"reasoning\": \"Wind speed can significantly impact flight delays due to its effect on aircraft performance and runway operations.\"}"
+}

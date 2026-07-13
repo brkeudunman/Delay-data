@@ -1,0 +1,7 @@
+{
+  "feature": "ORIGIN_INDEX",
+  "rep": 1,
+  "score": 0.8,
+  "reasoning": "Airports with higher baseline delay rates and congestion levels are more predictive of delays.",
+  "raw": "{\"score\": 0.8, \"reasoning\": \"Airports with higher baseline delay rates and congestion levels are more predictive of delays.\"}"
+}

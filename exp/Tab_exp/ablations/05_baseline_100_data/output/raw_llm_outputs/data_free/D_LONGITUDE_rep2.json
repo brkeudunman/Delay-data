@@ -1,0 +1,7 @@
+{
+  "feature": "D_LONGITUDE",
+  "rep": 2,
+  "score": 0.2,
+  "reasoning": "Longitude alone does not strongly correlate with delays.",
+  "raw": "{\"score\": 0.2, \"reasoning\": \"Longitude alone does not strongly correlate with delays.\"}"
+}

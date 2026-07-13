@@ -1,0 +1,7 @@
+{
+  "feature": "FL_WEEK",
+  "rep": 1,
+  "score": 0.75,
+  "reasoning": "Weekend flights (FL_WEEK=6 or 7) are more likely to be delayed due to higher demand and business travel patterns.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Weekend flights (FL_WEEK=6 or 7) are more likely to be delayed due to higher demand and business travel patterns.\"}"
+}

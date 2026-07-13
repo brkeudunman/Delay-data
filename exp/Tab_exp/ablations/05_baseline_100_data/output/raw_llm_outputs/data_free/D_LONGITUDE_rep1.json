@@ -1,0 +1,7 @@
+{
+  "feature": "D_LONGITUDE",
+  "rep": 1,
+  "score": 0.15,
+  "reasoning": "Longitude alone doesn't directly influence delay but might correlate with location-specific factors.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Longitude alone doesn't directly influence delay but might correlate with location-specific factors.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "D_LATITUDE",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Latitude may not directly correlate with delays but could be related to weather patterns.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Latitude may not directly correlate with delays but could be related to weather patterns.\"}"
+}

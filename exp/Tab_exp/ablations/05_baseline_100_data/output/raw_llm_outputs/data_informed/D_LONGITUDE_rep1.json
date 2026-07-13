@@ -1,0 +1,7 @@
+{
+  "feature": "D_LONGITUDE",
+  "rep": 1,
+  "score": 0.2,
+  "reasoning": "Longitude of the destination airport has a weak relationship with flight delays.",
+  "raw": "{\"score\": 0.2, \"reasoning\": \"Longitude of the destination airport has a weak relationship with flight delays.\"}"
+}

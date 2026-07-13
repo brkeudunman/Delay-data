@@ -1,0 +1,7 @@
+{
+  "feature": "D_WSPD",
+  "rep": 0,
+  "score": 0.45,
+  "reasoning": "Wind speed can significantly impact flight delays due to turbulence or runway congestion.",
+  "raw": "{\"score\": 0.45, \"reasoning\": \"Wind speed can significantly impact flight delays due to turbulence or runway congestion.\"}"
+}

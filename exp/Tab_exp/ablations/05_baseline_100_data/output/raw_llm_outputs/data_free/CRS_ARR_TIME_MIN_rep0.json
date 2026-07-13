@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ARR_TIME_MIN",
+  "rep": 0,
+  "score": 0.65,
+  "reasoning": "It directly relates to flight schedule and timing.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"It directly relates to flight schedule and timing.\"}"
+}

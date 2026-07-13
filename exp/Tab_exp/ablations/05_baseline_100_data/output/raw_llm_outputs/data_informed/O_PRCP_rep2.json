@@ -1,0 +1,7 @@
+{
+  "feature": "O_PRCP",
+  "rep": 2,
+  "score": 0.75,
+  "reasoning": "High precipitation often leads to delays due to runway and taxiway conditions.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"High precipitation often leads to delays due to runway and taxiway conditions.\"}"
+}

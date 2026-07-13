@@ -1,0 +1,7 @@
+{
+  "feature": "D_LATITUDE",
+  "rep": 1,
+  "score": 0.25,
+  "reasoning": "Latitude is not directly related to delays but can influence route distance.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"Latitude is not directly related to delays but can influence route distance.\"}"
+}

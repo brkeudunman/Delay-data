@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER_FL_NUM",
+  "rep": 2,
+  "score": 0.1,
+  "reasoning": "Flight numbers do not inherently contain much predictive information about delays.",
+  "raw": "{\"score\": 0.1, \"reasoning\": \"Flight numbers do not inherently contain much predictive information about delays.\"}"
+}

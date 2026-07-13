@@ -1,0 +1,7 @@
+{
+  "feature": "O_LONGITUDE",
+  "rep": 1,
+  "score": 0.3,
+  "reasoning": "It's a geographical proxy with some relevance to regional flight patterns.",
+  "raw": "{\"score\": 0.3, \"reasoning\": \"It's a geographical proxy with some relevance to regional flight patterns.\"}"
+}

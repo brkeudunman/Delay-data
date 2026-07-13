@@ -1,0 +1,7 @@
+{
+  "feature": "FL_DAY",
+  "rep": 1,
+  "score": 0.1,
+  "reasoning": "FL_DAY shows a weak pattern with delayed flights, as certain days may have more delays but this is not consistently predictive across all examples.",
+  "raw": "{\"score\": 0.1, \"reasoning\": \"FL_DAY shows a weak pattern with delayed flights, as certain days may have more delays but this is not consistently predictive across all examples.\"}"
+}

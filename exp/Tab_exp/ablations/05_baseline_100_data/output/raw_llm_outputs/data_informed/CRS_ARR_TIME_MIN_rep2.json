@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ARR_TIME_MIN",
+  "rep": 2,
+  "score": 0.7,
+  "reasoning": "CRS_ARR_TIME_MIN is closely related to flight delays as it indicates when a flight is scheduled to arrive, which can directly influence whether a flight will be delayed.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"CRS_ARR_TIME_MIN is closely related to flight delays as it indicates when a flight is scheduled to arrive, which can directly influence whether a flight will be delayed.\"}"
+}

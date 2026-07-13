@@ -1,0 +1,7 @@
+{
+  "feature": "O_TEMP",
+  "rep": 1,
+  "score": 0.4,
+  "reasoning": "Air temperature at the origin airport can influence flight delays due to factors like ground operations and de-icing needs, making it moderately predictive.",
+  "raw": "{\"score\": 0.4, \"reasoning\": \"Air temperature at the origin airport can influence flight delays due to factors like ground operations and de-icing needs, making it moderately predictive.\"}"
+}

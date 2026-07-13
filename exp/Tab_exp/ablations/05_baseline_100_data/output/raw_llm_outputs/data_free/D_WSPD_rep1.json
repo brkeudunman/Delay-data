@@ -1,0 +1,7 @@
+{
+  "feature": "D_WSPD",
+  "rep": 1,
+  "score": 0.25,
+  "reasoning": "Wind speed can moderately impact flight delays but is not the primary factor.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"Wind speed can moderately impact flight delays but is not the primary factor.\"}"
+}

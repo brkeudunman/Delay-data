@@ -1,0 +1,7 @@
+{
+  "feature": "FL_WEEK",
+  "rep": 1,
+  "score": 0.7,
+  "reasoning": "Weekdays versus weekends have different travel demands and business trip frequencies.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"Weekdays versus weekends have different travel demands and business trip frequencies.\"}"
+}

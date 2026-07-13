@@ -1,0 +1,7 @@
+{
+  "feature": "D_WSPD",
+  "rep": 0,
+  "score": 0.25,
+  "reasoning": "Wind speed can affect flight times but has limited predictive power compared to other factors.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"Wind speed can affect flight times but has limited predictive power compared to other factors.\"}"
+}

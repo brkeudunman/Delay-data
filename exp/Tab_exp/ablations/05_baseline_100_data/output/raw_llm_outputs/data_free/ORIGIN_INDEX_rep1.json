@@ -1,0 +1,7 @@
+{
+  "feature": "ORIGIN_INDEX",
+  "rep": 1,
+  "score": 0.75,
+  "reasoning": "Airports vary significantly in their baseline delay rates due to factors like traffic volume.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Airports vary significantly in their baseline delay rates due to factors like traffic volume.\"}"
+}

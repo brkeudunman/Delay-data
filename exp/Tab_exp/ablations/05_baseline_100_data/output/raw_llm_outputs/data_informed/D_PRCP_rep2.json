@@ -1,0 +1,7 @@
+{
+  "feature": "D_PRCP",
+  "rep": 2,
+  "score": 0.6,
+  "reasoning": "Rain or snow at the destination can significantly impact flight delays due to runway conditions, aircraft performance, and ground operations.",
+  "raw": "{\"score\": 0.6, \"reasoning\": \"Rain or snow at the destination can significantly impact flight delays due to runway conditions, aircraft performance, and ground operations.\"}"
+}

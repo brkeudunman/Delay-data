@@ -1,0 +1,7 @@
+{
+  "feature": "D_TEMP",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "The destination temperature has a weak correlation with flight delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"The destination temperature has a weak correlation with flight delays.\"}"
+}

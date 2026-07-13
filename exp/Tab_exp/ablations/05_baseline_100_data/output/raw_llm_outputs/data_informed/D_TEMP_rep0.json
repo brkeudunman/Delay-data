@@ -1,0 +1,7 @@
+{
+  "feature": "D_TEMP",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Temperature variations can affect flight operations but are not a primary determinant of delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Temperature variations can affect flight operations but are not a primary determinant of delays.\"}"
+}

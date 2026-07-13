@@ -1,0 +1,7 @@
+{
+  "feature": "D_PRCP",
+  "rep": 1,
+  "score": 0.35,
+  "reasoning": "Rain/snow can significantly impact flight delays.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Rain/snow can significantly impact flight delays.\"}"
+}

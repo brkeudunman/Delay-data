@@ -1,0 +1,7 @@
+{
+  "feature": "FL_WEEK",
+  "rep": 0,
+  "score": 0.55,
+  "reasoning": "Weekends and weekdays have different travel patterns with weekends often having more leisure flights which are less likely to be delayed compared to weekday business flights.",
+  "raw": "{\"score\": 0.55, \"reasoning\": \"Weekends and weekdays have different travel patterns with weekends often having more leisure flights which are less likely to be delayed compared to weekday business flights.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ELAPSED_TIME",
+  "rep": 1,
+  "score": 0.85,
+  "reasoning": "The flight duration is strongly correlated with the likelihood of a delay due to the limited buffer time for unforeseen events.",
+  "raw": "{\"score\": 0.85, \"reasoning\": \"The flight duration is strongly correlated with the likelihood of a delay due to the limited buffer time for unforeseen events.\"}"
+}

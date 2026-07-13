@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_DEP_TIME_MIN",
+  "rep": 2,
+  "score": 0.75,
+  "reasoning": "It captures temporal patterns and dependencies on previous flights.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"It captures temporal patterns and dependencies on previous flights.\"}"
+}

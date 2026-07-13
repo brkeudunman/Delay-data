@@ -1,0 +1,7 @@
+{
+  "feature": "D_TEMP",
+  "rep": 0,
+  "score": 0.35,
+  "reasoning": "Temperature can moderately affect flight delays due to factors like de-icing needs.",
+  "raw": "{\"score\": 0.35, \"reasoning\": \"Temperature can moderately affect flight delays due to factors like de-icing needs.\"}"
+}

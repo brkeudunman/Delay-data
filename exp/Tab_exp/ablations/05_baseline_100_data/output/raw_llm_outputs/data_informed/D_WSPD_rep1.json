@@ -1,0 +1,7 @@
+{
+  "feature": "D_WSPD",
+  "rep": 1,
+  "score": 0.25,
+  "reasoning": "Wind speed at the destination airport can affect flight delays, but it is not the most critical factor compared to other features like departure and arrival times or weather conditions.",
+  "raw": "{\"score\": 0.25, \"reasoning\": \"Wind speed at the destination airport can affect flight delays, but it is not the most critical factor compared to other features like departure and arrival times or weather conditions.\"}"
+}

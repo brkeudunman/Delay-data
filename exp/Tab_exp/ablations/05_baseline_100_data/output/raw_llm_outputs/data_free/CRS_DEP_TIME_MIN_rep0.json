@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_DEP_TIME_MIN",
+  "rep": 0,
+  "score": 0.75,
+  "reasoning": "Departs later in the day tend to accumulate more delays.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Departs later in the day tend to accumulate more delays.\"}"
+}

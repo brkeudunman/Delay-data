@@ -1,0 +1,7 @@
+{
+  "feature": "FL_WEEK",
+  "rep": 0,
+  "score": 0.6,
+  "reasoning": "Weekends and weekdays have different travel patterns affecting delays.",
+  "raw": "{\"score\": 0.6, \"reasoning\": \"Weekends and weekdays have different travel patterns affecting delays.\"}"
+}

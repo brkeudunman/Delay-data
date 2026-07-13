@@ -1,0 +1,7 @@
+{
+  "feature": "DEST_INDEX",
+  "rep": 1,
+  "score": 0.75,
+  "reasoning": "The destination airport can often indicate arrival congestion and slot constraints which are significant factors in flight delays.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"The destination airport can often indicate arrival congestion and slot constraints which are significant factors in flight delays.\"}"
+}

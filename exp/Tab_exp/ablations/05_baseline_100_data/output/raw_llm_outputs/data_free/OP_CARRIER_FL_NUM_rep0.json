@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER_FL_NUM",
+  "rep": 0,
+  "score": 0.1,
+  "reasoning": "Flight numbers do not directly indicate operational or weather conditions causing delays.",
+  "raw": "{\"score\": 0.1, \"reasoning\": \"Flight numbers do not directly indicate operational or weather conditions causing delays.\"}"
+}

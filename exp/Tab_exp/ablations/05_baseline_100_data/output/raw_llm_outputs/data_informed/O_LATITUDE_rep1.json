@@ -1,0 +1,7 @@
+{
+  "feature": "O_LATITUDE",
+  "rep": 1,
+  "score": 0.4,
+  "reasoning": "Latitude might correlate with weather patterns and climate zones which can affect flight delays.",
+  "raw": "{\"score\": 0.4, \"reasoning\": \"Latitude might correlate with weather patterns and climate zones which can affect flight delays.\"}"
+}

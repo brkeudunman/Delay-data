@@ -1,0 +1,20 @@
+Feature,LLM_Score,LLM_Score_std,Reasoning
+ORIGIN_INDEX,0.7999999999999999,0.04082482904638629,Significant variation in delay rates between airports.
+O_PRCP,0.7666666666666666,0.047140452079103216,Weather significantly impacts flight departures.
+O_WSPD,0.75,0.04082482904638634,Wind speed significantly impacts flight departure times.
+OP_CARRIER,0.7166666666666667,0.04714045207910316,Different airlines have varying punctuality rates and operational practices.
+CRS_DEP_TIME_MIN,0.7166666666666667,0.04714045207910316,Departs later in the day tend to accumulate more delays.
+DEST_INDEX,0.6833333333333332,0.062360956446232366,Different airports have varying arrival dynamics affecting delays.
+FL_WEEK,0.6499999999999999,0.04082482904638629,Weekends and weekdays have different travel patterns affecting delays.
+CRS_ELAPSED_TIME,0.6333333333333333,0.04714045207910316,It provides insight into potential delays due to longer routes.
+CRS_ARR_TIME_MIN,0.6,0.07071067811865477,It directly relates to flight schedule and timing.
+D_PRCP,0.5166666666666666,0.11785113019775792,Rain can significantly impact flight delays due to runway conditions and aircraft performance.
+O_LATITUDE,0.3833333333333333,0.023570226039551608,It provides some regional context but is not highly predictive on its own.
+D_TEMP,0.31666666666666665,0.04714045207910316,Temperature can moderately affect flight delays due to factors like de-icing needs.
+O_TEMP,0.31666666666666665,0.04714045207910316,Temperature can indirectly affect flight delays but is not a primary factor.
+D_WSPD,0.2833333333333333,0.04714045207910316,Wind speed can affect flight times but has limited predictive power compared to other factors.
+FL_DAY,0.2333333333333333,0.02357022603955158,It provides some context but doesn't directly indicate operational issues.
+O_LONGITUDE,0.2333333333333333,0.04714045207910316,It is a rough proxy with limited direct predictive power.
+D_LATITUDE,0.18333333333333335,0.04714045207910317,Latitude may not directly correlate with delays but could be related to weather patterns.
+D_LONGITUDE,0.18333333333333335,0.02357022603955159,Longitude may have some indirect effects but is not a primary determinant of delays.
+OP_CARRIER_FL_NUM,0.11666666666666665,0.02357022603955158,Flight numbers do not directly indicate operational or weather conditions causing delays.

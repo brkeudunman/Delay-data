@@ -1,0 +1,7 @@
+{
+  "feature": "D_LATITUDE",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Latitude has a weak relationship with flight delays as delays are more influenced by factors like weather and air traffic control.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Latitude has a weak relationship with flight delays as delays are more influenced by factors like weather and air traffic control.\"}"
+}

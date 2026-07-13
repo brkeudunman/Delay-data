@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER",
+  "rep": 0,
+  "score": 0.65,
+  "reasoning": "Different operating airlines have varying on-time performance and scheduling practices which can significantly impact flight delays.",
+  "raw": "{\"score\": 0.65, \"reasoning\": \"Different operating airlines have varying on-time performance and scheduling practices which can significantly impact flight delays.\"}"
+}

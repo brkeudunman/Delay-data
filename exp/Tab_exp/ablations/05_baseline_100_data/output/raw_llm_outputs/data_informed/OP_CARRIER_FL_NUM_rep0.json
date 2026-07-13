@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER_FL_NUM",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "The flight number does not contain enough information to be highly predictive of delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"The flight number does not contain enough information to be highly predictive of delays.\"}"
+}

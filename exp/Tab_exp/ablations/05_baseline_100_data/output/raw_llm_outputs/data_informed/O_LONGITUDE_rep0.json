@@ -1,0 +1,7 @@
+{
+  "feature": "O_LONGITUDE",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Longitude shows some regional patterns but is highly correlated with latitude and does not capture enough unique information to be very predictive of delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Longitude shows some regional patterns but is highly correlated with latitude and does not capture enough unique information to be very predictive of delays.\"}"
+}

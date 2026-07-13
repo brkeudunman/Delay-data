@@ -1,0 +1,7 @@
+{
+  "feature": "O_TEMP",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "Air temperature has a minor impact on flight delays as other factors like traffic and maintenance are more significant.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Air temperature has a minor impact on flight delays as other factors like traffic and maintenance are more significant.\"}"
+}

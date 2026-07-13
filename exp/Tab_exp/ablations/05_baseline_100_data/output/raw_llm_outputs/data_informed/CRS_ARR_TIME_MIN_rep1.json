@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ARR_TIME_MIN",
+  "rep": 1,
+  "score": 0.85,
+  "reasoning": "The feature CRS_ARR_TIME_MIN is highly correlated with whether a flight is delayed as it represents the scheduled arrival time which gives an indication of when the plane should arrive at the destination.",
+  "raw": "{\"score\": 0.85, \"reasoning\": \"The feature CRS_ARR_TIME_MIN is highly correlated with whether a flight is delayed as it represents the scheduled arrival time which gives an indication of when the plane should arrive at the destination.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "O_WSPD",
+  "rep": 0,
+  "score": 0.7,
+  "reasoning": "Wind speed significantly impacts flight departure times.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"Wind speed significantly impacts flight departure times.\"}"
+}

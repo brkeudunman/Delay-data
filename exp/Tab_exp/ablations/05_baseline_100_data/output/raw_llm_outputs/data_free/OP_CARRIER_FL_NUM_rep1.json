@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER_FL_NUM",
+  "rep": 1,
+  "score": 0.15,
+  "reasoning": "Flight numbers alone are not strongly indicative of delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Flight numbers alone are not strongly indicative of delays.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "O_PRCP",
+  "rep": 1,
+  "score": 0.7,
+  "reasoning": "Precipitation can significantly impact flight operations and delays.",
+  "raw": "{\"score\": 0.7, \"reasoning\": \"Precipitation can significantly impact flight operations and delays.\"}"
+}

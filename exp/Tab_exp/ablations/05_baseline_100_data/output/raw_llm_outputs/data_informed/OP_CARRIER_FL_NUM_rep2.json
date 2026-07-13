@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER_FL_NUM",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "While not highly predictive on its own, it can provide some context about the carrier and route, which may have operational implications.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"While not highly predictive on its own, it can provide some context about the carrier and route, which may have operational implications.\"}"
+}

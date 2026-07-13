@@ -1,0 +1,7 @@
+{
+  "feature": "DEST_INDEX",
+  "rep": 1,
+  "score": 0.6,
+  "reasoning": "Different airports have varying degrees of arrival congestion which can significantly impact delays.",
+  "raw": "{\"score\": 0.6, \"reasoning\": \"Different airports have varying degrees of arrival congestion which can significantly impact delays.\"}"
+}

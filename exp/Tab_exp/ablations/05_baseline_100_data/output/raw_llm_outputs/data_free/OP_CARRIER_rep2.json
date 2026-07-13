@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER",
+  "rep": 2,
+  "score": 0.75,
+  "reasoning": "Operating carrier can significantly impact flight schedules and punctuality.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Operating carrier can significantly impact flight schedules and punctuality.\"}"
+}

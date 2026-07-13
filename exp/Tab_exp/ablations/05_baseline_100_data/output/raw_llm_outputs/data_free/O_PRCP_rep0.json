@@ -1,0 +1,7 @@
+{
+  "feature": "O_PRCP",
+  "rep": 0,
+  "score": 0.8,
+  "reasoning": "Weather significantly impacts flight departures.",
+  "raw": "{\"score\": 0.8, \"reasoning\": \"Weather significantly impacts flight departures.\"}"
+}

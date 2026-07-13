@@ -1,0 +1,7 @@
+{
+  "feature": "D_PRCP",
+  "rep": 1,
+  "score": 0.75,
+  "reasoning": "Precipitation is a known factor that can cause delays due to runway conditions or aircraft performance.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Precipitation is a known factor that can cause delays due to runway conditions or aircraft performance.\"}"
+}

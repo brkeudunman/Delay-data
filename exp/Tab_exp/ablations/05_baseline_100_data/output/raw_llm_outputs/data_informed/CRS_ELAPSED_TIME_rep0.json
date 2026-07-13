@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ELAPSED_TIME",
+  "rep": 0,
+  "score": 0.75,
+  "reasoning": "Flight duration is strongly correlated with delays as longer flights have more opportunities to accumulate delay.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Flight duration is strongly correlated with delays as longer flights have more opportunities to accumulate delay.\"}"
+}

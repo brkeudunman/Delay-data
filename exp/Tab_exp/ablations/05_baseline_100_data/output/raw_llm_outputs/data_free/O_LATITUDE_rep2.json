@@ -1,0 +1,7 @@
+{
+  "feature": "O_LATITUDE",
+  "rep": 2,
+  "score": 0.4,
+  "reasoning": "It can provide some context about regional weather patterns but is not highly specific to flight delays.",
+  "raw": "{\"score\": 0.4, \"reasoning\": \"It can provide some context about regional weather patterns but is not highly specific to flight delays.\"}"
+}

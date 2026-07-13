@@ -1,0 +1,7 @@
+{
+  "feature": "FL_DAY",
+  "rep": 0,
+  "score": 0.15,
+  "reasoning": "FL_DAY shows some variation in delays but is not highly predictive due to many other factors affecting flight delays.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"FL_DAY shows some variation in delays but is not highly predictive due to many other factors affecting flight delays.\"}"
+}

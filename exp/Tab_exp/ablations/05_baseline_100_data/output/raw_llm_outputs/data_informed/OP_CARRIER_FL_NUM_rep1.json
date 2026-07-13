@@ -1,0 +1,7 @@
+{
+  "feature": "OP_CARRIER_FL_NUM",
+  "rep": 1,
+  "score": 0.1,
+  "reasoning": "While flight numbers uniquely identify flights, they do not provide direct information about delays without additional context like schedules or historical performance.",
+  "raw": "{\"score\": 0.1, \"reasoning\": \"While flight numbers uniquely identify flights, they do not provide direct information about delays without additional context like schedules or historical performance.\"}"
+}

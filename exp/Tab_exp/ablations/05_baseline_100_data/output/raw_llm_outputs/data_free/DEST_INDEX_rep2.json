@@ -1,0 +1,7 @@
+{
+  "feature": "DEST_INDEX",
+  "rep": 2,
+  "score": 0.75,
+  "reasoning": "Different airports have varying arrival dynamics affecting delays.",
+  "raw": "{\"score\": 0.75, \"reasoning\": \"Different airports have varying arrival dynamics affecting delays.\"}"
+}

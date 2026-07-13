@@ -1,0 +1,7 @@
+{
+  "feature": "O_TEMP",
+  "rep": 2,
+  "score": 0.15,
+  "reasoning": "Air temperature has a moderate correlation with flight delays, but other factors like weather conditions and aircraft performance are more critical.",
+  "raw": "{\"score\": 0.15, \"reasoning\": \"Air temperature has a moderate correlation with flight delays, but other factors like weather conditions and aircraft performance are more critical.\"}"
+}

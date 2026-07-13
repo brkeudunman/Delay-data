@@ -1,0 +1,7 @@
+{
+  "feature": "D_LONGITUDE",
+  "rep": 0,
+  "score": 0.2,
+  "reasoning": "Longitude may have some indirect effects but is not a primary determinant of delays.",
+  "raw": "{\"score\": 0.2, \"reasoning\": \"Longitude may have some indirect effects but is not a primary determinant of delays.\"}"
+}

@@ -1,0 +1,7 @@
+{
+  "feature": "DEST_INDEX",
+  "rep": 0,
+  "score": 0.5,
+  "reasoning": "The destination airport can significantly impact arrival congestion and slot constraints, which are relevant to delays.",
+  "raw": "{\"score\": 0.5, \"reasoning\": \"The destination airport can significantly impact arrival congestion and slot constraints, which are relevant to delays.\"}"
+}

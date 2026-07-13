@@ -1,0 +1,7 @@
+{
+  "feature": "CRS_ELAPSED_TIME",
+  "rep": 2,
+  "score": 0.6,
+  "reasoning": "It provides a good indication of the potential for delays, especially on long routes.",
+  "raw": "{\"score\": 0.6, \"reasoning\": \"It provides a good indication of the potential for delays, especially on long routes.\"}"
+}
