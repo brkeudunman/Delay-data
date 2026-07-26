@@ -1,0 +1,58 @@
+experiment:
+  name: representation_bakeoff
+  description: >
+    Controlled bake-off of tabular representations feeding one fixed MLP head.
+    A=SentenceTransformer, B=skrub TableVectorizer, C=TabPFN (frozen embedder).
+    D = best representation + HUIM delay-cost patterns. Only the input embedding
+    varies; head, split, sample, seed and metric are identical across A/B/C/D.
+
+paths:
+  # Raw per-year BTS+weather CSVs (flight_with_weather_YYYY.csv)
+  raw_dir: C:\Users\user\Desktop\tez\git\Delay-data\Datasets\Aeolus\Flight_Tab
+  # Processed model-ready Tab CSVs (Flight_tab_YYYY.csv + data_info_YYYY.yaml)
+  tab_dir: C:\Users\user\Desktop\tez\git\Delay-data\Datasets\Aeolus\Flight_Tab\Tab
+  # Working artifacts written by this experiment (sample, embeddings, results)
+  work_dir: artifacts
+
+data:
+  years: [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+  sample_total: 50000          # total rows across all years (stratified by year+label)
+  seed: 42
+  # Temporal split by day-of-month (repo convention; never shuffle across days)
+  train_days_max: 9            # FL_DAY <= 9  -> train
+  val_days_max: 12             # 9 < FL_DAY <= 12 -> val ; FL_DAY > 12 -> test
+  target: ARR_DELAY
+  delay_threshold: 15.0        # |ARR_DELAY| > 15 min -> delayed (label 1)
+  exclude_cols: [FLIGHTS, FL_YEAR, FL_MONTH]   # + DEP_DELAY (2nd target) dropped as a feature
+
+# The single fixed classifier head (plain torch MLP). Identical for every representation.
+head:
+  hidden: [256, 128]
+  dropout: 0.1
+  lr: 0.001
+  batch_size: 2048
+  max_epochs: 50
+  patience: 5                  # early stop on val AUC
+  seeds: [42, 43, 44]          # report mean +/- std across these
+
+representations:
+  sentence_transformer:
+    model_name: all-MiniLM-L6-v2   # 384-d
+  skrub:
+    # TableVectorizer defaults handle high-cardinality cols; StandardScale after.
+    cardinality_threshold: 40
+  tabpfn:
+    context_max: 10000          # in-context cap; subsample train context to this
+    batch_size: 4096            # emit embeddings for the full sample in batches
+    n_estimators: 2             # ensemble passes averaged into the embedding (lean for speed)
+
+huim:
+  n_bins: 5                     # KBinsDiscretizer quantile bins (fit on train only)
+  utility_col: ARR_DELAY        # synthesized delay-cost proxy = |ARR_DELAY| (minutes)
+  min_util_percentile: 98       # EFIM minUtil; falls back to 75 if no patterns
+  max_txn: 4000                 # cap transactions per class (mining speed); 0 = no cap
+  item_exclude_cols: [OP_CARRIER_FL_NUM]   # drop noisy high-cardinality items from mining
+  max_pattern_size: 3           # keep only short patterns (frequent -> useful binary features)
+  save_top: 200                 # patterns saved per class (utility-ranked)
+  top_drivers_n: 20             # patterns used within the delayed class
+  top_protectors_n: 20          # patterns used within the on-time class
