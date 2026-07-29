@@ -8,6 +8,11 @@ temporal `FL_DAY` split (train 14,690 / val 4,985 / test 30,325); target `|ARR_D
 (40.8% positive); one plain-torch MLP head (`[256,128]`, dropout 0.1, Adam 1e-3);
 AUC primary + F1-macro + accuracy, mean ± std over seeds `[42,43,44]`.
 
+![Representation bake-off results](figures/bakeoff_results.png)
+
+Regenerate the figure (light + dark PNGs into `figures/`) after any re-run:
+`uv run python exp/Tab_exp/representation_bakeoff/make_figures.py`
+
 ## Table
 
 | # | Representation | dim | AUC (mean ± std) | F1-macro | Accuracy |
@@ -25,7 +30,8 @@ AUC primary + F1-macro + accuracy, mean ± std over seeds `[42,43,44]`.
    the tokenizer mangle the numeric features.
 3. **HUIM does not help here.** Concatenating 40 delay-cost pattern columns onto skrub
    *lowered* AUC by 0.6% (D 0.5919 vs B 0.5982) — a real negative outside the seed-noise
-   band, not a wash. On this data the mined patterns add nothing over what skrub already
+   band, not a wash (3.5σ of the seed-to-seed difference; F1-macro is down a marginal 1.1σ,
+   accuracy is within noise). On this data the mined patterns add nothing over what skrub already
    encodes. Reported as-is (no tuning-to-positive). Top mined delay driver:
    `CRS_DEP_TIME_MIN=VeryLow + D_LATITUDE=VeryHigh`.
 4. Overall ceiling is modest (~0.60 AUC) — consistent with the repo's other tabular
