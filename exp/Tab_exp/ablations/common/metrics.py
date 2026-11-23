@@ -2,7 +2,7 @@
 hard-label AUC, which is really balanced accuracy); the hard-label value is kept
 as `auc_hard` so old tables can still be bridged."""
 import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, average_precision_score, f1_score, roc_auc_score
 
 
 def positive_scores(proba: np.ndarray) -> np.ndarray:
@@ -11,6 +11,14 @@ def positive_scores(proba: np.ndarray) -> np.ndarray:
     if proba.ndim == 1:
         return proba
     return proba[:, 0] if proba.shape[1] == 1 else proba[:, 1]
+
+
+def average_precision(y, proba, n_classes: int) -> float:
+    """PR-AUC (average precision) of the positive class (label 1) for binary targets;
+    NaN for multi-class. Its chance level is the positive rate, not 0.5."""
+    if n_classes != 2:
+        return float("nan")
+    return float(average_precision_score(np.asarray(y), positive_scores(proba)))
 
 
 def predict_proba_chunked(model, X, chunk: int, batch_size: int) -> np.ndarray:
@@ -44,6 +52,7 @@ def evaluate(model, X_test, y_test, n_classes: int, chunk: int, batch_size: int)
         "auc": float(auc),
         "accuracy": float(accuracy_score(y, pred)),
         "f1_macro": float(f1_score(y, pred, average="macro")),
+        "average_precision": average_precision(y, proba, n_classes),
         "auc_hard": float(auc_hard),
         "proba": proba,  # (n_test, 1|k) — popped by the runner, saved for paired tests
     }

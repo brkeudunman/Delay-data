@@ -54,7 +54,7 @@ TEST_HASH_REGISTRY = ABLATIONS_DIR / "test_hashes.json"
 
 RESULT_COLUMNS = [
     "arm", "model", "seed", "target", "phase2_frac", "n_train", "n_val", "n_test",
-    "test_pos_rate", "test_hash", "auc", "accuracy", "f1_macro",
+    "test_pos_rate", "test_hash", "auc", "accuracy", "f1_macro", "average_precision",
     # extras
     "auc_hard", "extraction", "n_features", "best_params", "phase1_sig", "timestamp",
 ]
@@ -413,6 +413,7 @@ def main(arm_dir, argv=None):
             "n_test": len(X_test),
             "test_pos_rate": float((y_test == D.positive_class(target)).mean()),
             "test_hash": digest, "auc": auc_col, "accuracy": m["accuracy"], "f1_macro": m["f1_macro"],
+            "average_precision": m["average_precision"],
             "auc_hard": m["auc_hard"], "extraction": extraction, "n_features": X_test.shape[1],
             "best_params": json.dumps(bp, default=float), "phase1_sig": sig,
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
