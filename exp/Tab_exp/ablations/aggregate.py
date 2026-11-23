@@ -30,6 +30,7 @@ OUT = HERE / "aggregate"
 ARMS = {
     "baseline_matched_training": "01b all features (ref)",
     "shap_only": "02 SHAP top-10",
+    "shap_top5": "02b SHAP top-5",
     "shap_plus_huim": "03 SHAP + HUIM",
     "huim_only": "04 HUIM only",
     "llm_top10": "06 LLM top-10",
@@ -51,7 +52,12 @@ OTHER_YEAR_NOTE = (
     "the models are still trained and tested on 2020. The question is whether patterns "
     "found in another year still help in 2020. The all-features reference (01b) is "
     "repeated for comparison.")
-METRICS = ["auc", "accuracy", "f1_macro"]
+METRICS = ["auc", "accuracy", "f1_macro", "average_precision"]
+# AP's chance level is the positive rate, so tables show test_pos_rate ("base rate") next to it.
+# Cells averaged over fewer seeds are blanked in the pivot / delta tables (shown as
+# "n<3" in the markdown, NaN in deltas.csv); ablation_table.csv keeps them with n_seeds.
+MIN_SEEDS = 3
+LOW_N = f"n<{MIN_SEEDS}"
 
 
 def load() -> pd.DataFrame:
@@ -73,6 +79,8 @@ def load() -> pd.DataFrame:
 
 
 def fmt(m, s, n):
+    if pd.isna(m):  # e.g. average_precision for 3class, or not logged/backfilled yet
+        return ""
     return f"{m:.4f}" if n < 2 or pd.isna(s) else f"{m:.4f} ± {s:.4f}"
 
 
@@ -89,6 +97,7 @@ def summary(df: pd.DataFrame) -> pd.DataFrame:
     g = df.groupby(keys, dropna=False)
     out = g[METRICS].agg(["mean", "std"])
     out.columns = [f"{m}_{s}" for m, s in out.columns]
+    out["test_pos_rate"] = g["test_pos_rate"].mean()  # identical across seeds (same test set)
     out["n_seeds"] = g["seed"].nunique()
     out["seeds"] = g["seed"].apply(lambda s: ",".join(map(str, sorted(s.unique()))))
     out = out.reset_index()
@@ -109,10 +118,16 @@ def pivot(s: pd.DataFrame) -> pd.DataFrame:
         r = {"feature set": name}
         if multi:
             r["target/p2"] = f"{tgt}/{p2}"
-        best = g.loc[g["auc_mean"].idxmax(), "model"]
+        ok = g[g.n_seeds >= MIN_SEEDS]
+        best = ok.loc[ok["auc_mean"].idxmax(), "model"] if len(ok) else None
         for m in MODELS:
             x = g[g.model == m]
-            cell = fmt(x.auc_mean.iloc[0], x.auc_std.iloc[0], x.n_seeds.iloc[0]) if len(x) else ""
+            if not len(x):
+                cell = ""
+            elif x.n_seeds.iloc[0] < MIN_SEEDS:
+                cell = LOW_N
+            else:
+                cell = fmt(x.auc_mean.iloc[0], x.auc_std.iloc[0], x.n_seeds.iloc[0])
             r[m] = f"**{cell}**" if cell and m == best else cell
         rows.append(r)
     return pd.DataFrame(rows)
@@ -146,15 +161,25 @@ def deltas(df: pd.DataFrame) -> pd.DataFrame:
                 for name, (a, b) in {"Δ SHAP sel (02−01b)": (s02, ref), "Δ HUIM (03−02)": (s03, s02),
                                      "Δ total (03−01b)": (s03, ref), "Δ HUIM-only (04−01b)": (s04, ref)}.items():
                     m, s, n = pair(a, b)
-                    r[name] = np.nan if n == 0 else round(m, 4)
-                    r[name + " std"] = s
+                    r[name] = np.nan if n < MIN_SEEDS else round(m, 4)
+                    r[name + " std"] = np.nan if n < MIN_SEEDS else s
                     r[name + " n"] = n
                 for a, col in ((ref, "AUC 01b"), (s02, "AUC 02"), (s03, "AUC 03"), (s04, "AUC 04")):
                     v = a[a.index.get_level_values(0) == model]
-                    r[col] = round(v.mean(), 4) if len(v) else np.nan
-                if any(pd.notna(r[c]) for c in ("AUC 02", "AUC 03", "AUC 04")):
+                    r[col] = round(v.mean(), 4) if len(v) >= MIN_SEEDS else np.nan
+                    r[col + " n"] = len(v)
+                if any(r[c + " n"] for c in ("AUC 02", "AUC 03", "AUC 04")):
                     rows.append(r)
     return pd.DataFrame(rows)
+
+
+def delta_display(d: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    """Markdown view of deltas: cells that exist but rest on < MIN_SEEDS seeds -> "n<3"."""
+    out = d[cols].copy().astype(object)
+    for c in cols:
+        if c + " n" in d.columns:
+            out.loc[d[c + " n"].between(1, MIN_SEEDS - 1), c] = LOW_N
+    return out
 
 
 def write_arm_results(s: pd.DataFrame, df: pd.DataFrame) -> list[Path]:
@@ -176,6 +201,9 @@ def write_arm_results(s: pd.DataFrame, df: pd.DataFrame) -> list[Path]:
                 "AUC": [fmt(x, y, n) for x, y, n in zip(h.auc_mean, h.auc_std, h.n_seeds)],
                 "accuracy": [fmt(x, y, n) for x, y, n in zip(h.accuracy_mean, h.accuracy_std, h.n_seeds)],
                 "macro-F1": [fmt(x, y, n) for x, y, n in zip(h.f1_macro_mean, h.f1_macro_std, h.n_seeds)],
+                "AP": [fmt(x, y, n) for x, y, n in
+                       zip(h.average_precision_mean, h.average_precision_std, h.n_seeds)],
+                "base rate": [f"{v:.4f}" for v in h["test_pos_rate"]],
                 "seeds": h["seeds"]}))
 
         main, other = g[g.extraction != OTHER_YEAR_EXT], g[g.extraction == OTHER_YEAR_EXT]
@@ -232,8 +260,10 @@ def main():
     disp = pd.DataFrame({
         "arm": s["arm"].map(ARMS).fillna(s["arm"]), "extraction": s["extraction"],
         "model": s["model"], "target": s["target"], "p2_frac": s["phase2_frac"],
-        **{m.upper() if m == "auc" else m: [fmt(x, y, n) for x, y, n in zip(s[f"{m}_mean"], s[f"{m}_std"], s["n_seeds"])]
+        **{{"auc": "AUC", "average_precision": "AP"}.get(m, m):
+           [fmt(x, y, n) for x, y, n in zip(s[f"{m}_mean"], s[f"{m}_std"], s["n_seeds"])]
            for m in METRICS},
+        "base rate": [f"{v:.4f}" for v in s["test_pos_rate"]],
         "seeds": s["seeds"],
     })
     d = deltas(df)
@@ -247,20 +277,24 @@ def main():
           f"Generated by `aggregate.py` from {df['source'].nunique()} arm result files, "
           f"{len(df)} runs. Test set hash(es): {sorted(df['test_hash'].unique())}. "
           "Values are mean ± std over seeds (std omitted for a single seed). "
-          "AUC is computed from predicted probabilities. Models are always trained and "
+          "AUC is computed from predicted probabilities. AP = average precision (PR-AUC) of "
+          "the positive class; its chance level is the base rate (test positive rate), shown "
+          "next to it. Models are always trained and "
           "tested on 2020; arms 02–04 use SHAP rankings / HUIM patterns mined on the 2020 "
           "training days. Results with patterns mined on 2024 are in a separate section "
           "at the end.\n",
           "## Side by side: AUC per feature set (rows) and model (columns)\n",
-          "mean ± std over seeds; **bold** = best model for that feature set.\n",
+          f"mean ± std over seeds; **bold** = best model for that feature set; `{LOW_N}`: "
+          f"fewer than {MIN_SEEDS} seeds, not reported (see the all-metrics table).\n",
           md_table(pivot(s[~is_other])), "",
           "## Arm × model (all metrics)\n",
           md_table(disp[~is_other.to_numpy()].drop(columns="extraction")), ""]
     if len(d):
         md += ["## Where does the gain come from? (seed-matched AUC deltas)\n",
                "Δ SHAP sel isolates feature selection; Δ HUIM isolates adding the HUIM pattern "
-               "columns on top of the same SHAP features. Empty cells: that arm has not run yet.\n",
-               md_table(d[d.extraction == PRIMARY_EXT][dcols]), ""]
+               "columns on top of the same SHAP features. Empty cells: that arm has not run yet; "
+               f"`{LOW_N}`: fewer than {MIN_SEEDS} seeds, not reported.\n",
+               md_table(delta_display(d[d.extraction == PRIMARY_EXT], dcols)), ""]
     if is_other.any():
         md += ["## Patterns mined on another year (2024)\n", OTHER_YEAR_NOTE + "\n",
                "### AUC per feature set and model\n",
@@ -269,7 +303,7 @@ def main():
                md_table(disp[(is_other | is_ref).to_numpy()].drop(columns="extraction")), ""]
         if len(d):
             md += ["### Seed-matched AUC deltas with 2024 patterns\n",
-                   md_table(d[d.extraction == OTHER_YEAR_EXT][dcols]), ""]
+                   md_table(delta_display(d[d.extraction == OTHER_YEAR_EXT], dcols)), ""]
     bake = HERE / "representation" / "bakeoff" / "RESULTS_GBDT.md"
     if bake.exists():
         body = bake.read_text(encoding="utf-8").split("\n", 1)[1]

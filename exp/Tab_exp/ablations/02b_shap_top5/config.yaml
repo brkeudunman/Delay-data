@@ -1,0 +1,14 @@
+experiment:
+  name: "shap_top5"
+  description: >
+    Top-5 SHAP-selected features only. No HUIM patterns. The SHAP counterpart of the
+    LLM top-5 arms (06_1 / 06_2): same feature budget, ranking from SHAP instead of an LLM.
+    Separate arm (not --set features.top_shap_n=5 on 02) because top_shap_n is not part of
+    the runner's skip key, so those runs would collide with the top-10 rows.
+
+features:
+  mode: "shap_only"
+  top_shap_n: 5
+  # SHAP/HUIM files, relative to this arm dir. Primary: 2020 training days only.
+  # Cross-year check: --set features.extraction_dir=../../shap_huim_extractions/01_2024_baseline/csvs
+  extraction_dir: "../../shap_huim_extractions/02_2020_train/csvs"

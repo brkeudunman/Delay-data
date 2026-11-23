@@ -16,7 +16,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 from common.runner import load_config, parse_args  # noqa: E402
 
-ARMS = ["01_baseline_all_features", "01b_baseline_matched_training", "02_shap_only",
+ARMS = ["01_baseline_all_features", "01b_baseline_matched_training", "02_shap_only", "02b_shap_top5",
         "03_shap_plus_huim", "04_huim_only", "06_llm_top10", "06_1_llm_top5_datafree",
         "06_2_llm_top5_datainformed"]
 FEATURE_SECTIONS = ("experiment", "features")
