@@ -125,8 +125,9 @@ def run_multiseed(Z_tr, y_tr, Z_va, y_va, Z_te, y_te, head_cfg, device=None) -> 
         aucs.append(m["auc"]); f1s.append(m["f1_macro"]); accs.append(m["acc"])
         print(f"    seed={seed}: AUC={m['auc']:.4f} F1m={m['f1_macro']:.4f} ACC={m['acc']:.4f}")
     return {
-        "auc_mean": float(np.mean(aucs)), "auc_std": float(np.std(aucs)),
-        "f1_mean": float(np.mean(f1s)), "f1_std": float(np.std(f1s)),
-        "acc_mean": float(np.mean(accs)), "acc_std": float(np.std(accs)),
+        # sample std (ddof=1), like the pandas .std() in ../../aggregate.py
+        "auc_mean": float(np.mean(aucs)), "auc_std": float(np.std(aucs, ddof=1)),
+        "f1_mean": float(np.mean(f1s)), "f1_std": float(np.std(f1s, ddof=1)),
+        "acc_mean": float(np.mean(accs)), "acc_std": float(np.std(accs, ddof=1)),
         "seeds": list(head_cfg["seeds"]),
     }

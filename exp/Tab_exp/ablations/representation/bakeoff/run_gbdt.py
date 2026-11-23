@@ -36,10 +36,12 @@ LGB_PARAMS = dict(num_leaves=31, learning_rate=0.05, min_child_samples=50,
                   subsample=0.8, subsample_freq=1, colsample_bytree=0.8)
 CB_PARAMS = dict(depth=6, learning_rate=0.05, l2_leaf_reg=3, rsm=0.8,
                  bootstrap_type="Bernoulli", subsample=0.8)
-# TabFM head on the same skrub representation (../skrub_head/README.md, 3 seeds)
+# TabFM head on the same skrub representation (../skrub_head/README.md, 3 seeds).
+# std = sample std (ddof=1) of the per-seed values printed in skrub_head_ablation.ipynb
+# (the notebook itself reports ddof=0: 0.0001 / 0.0004 / 0.0002).
 TABFM_ROW = {"Representation": "skrub + TabFM (head ablation)", "dim": 95,
-             "auc_mean": 0.6336, "auc_std": 0.0001, "f1_mean": 0.5451, "f1_std": 0.0004,
-             "acc_mean": 0.6168, "acc_std": 0.0002}
+             "auc_mean": 0.6336, "auc_std": 0.0001, "f1_mean": 0.5451, "f1_std": 0.0005,
+             "acc_mean": 0.6168, "acc_std": 0.0003}
 
 
 def metrics(y, p):
@@ -48,11 +50,12 @@ def metrics(y, p):
 
 
 def summarise(name, dim, per_seed):
+    """Sample std (ddof=1), like the pandas .std() in ../../aggregate.py."""
     a = np.array(per_seed)
     return {"Representation": name, "dim": dim,
-            "auc_mean": a[:, 0].mean(), "auc_std": a[:, 0].std(),
-            "f1_mean": a[:, 1].mean(), "f1_std": a[:, 1].std(),
-            "acc_mean": a[:, 2].mean(), "acc_std": a[:, 2].std()}
+            "auc_mean": a[:, 0].mean(), "auc_std": a[:, 0].std(ddof=1),
+            "f1_mean": a[:, 1].mean(), "f1_std": a[:, 1].std(ddof=1),
+            "acc_mean": a[:, 2].mean(), "acc_std": a[:, 2].std(ddof=1)}
 
 
 def lightgbm_rows(Z, y, masks, seeds):
@@ -120,12 +123,19 @@ def main():
     res = pd.concat([res, pd.DataFrame(rows[1:])], ignore_index=True)  # the rerun is a check, not a row
     res.to_csv(res_csv, index=False)
 
-    comp = pd.concat([res, pd.DataFrame([rows[0], TABFM_ROW])], ignore_index=True)
+    write_report(res, rows[0], (tr.sum(), va.sum(), te.sum()), seeds)
+
+
+def write_report(res: pd.DataFrame, rerun_row: dict, split, seeds, notes=()):
+    """RESULTS_GBDT.md: results.csv rows + the skrub+MLP rerun check + the TabFM row."""
+    comp = pd.concat([res, pd.DataFrame([rerun_row, TABFM_ROW])], ignore_index=True)
     comp = comp.sort_values("auc_mean", ascending=False)
     lines = ["# Bake-off with GBDT rows\n",
-             f"50k sample, split {tr.sum()}/{va.sum()}/{te.sum()}, seeds {seeds}; mean ± std over seeds. "
+             f"50k sample, split {split[0]}/{split[1]}/{split[2]}, seeds {seeds}; mean ± std over seeds "
+             "(sample std, ddof=1, as in `../../aggregate.py`). "
              "GBDTs use one fixed configuration with early stopping on validation AUC (no search, like the "
              "fixed MLP head). The TabFM row is copied from `../skrub_head/README.md`.\n",
+             *notes,
              "| Representation / head | dim | AUC | F1-macro | Accuracy |", "|---|---|---|---|---|"]
     for r in comp.itertuples(index=False):
         lines.append(f"| {r.Representation} | {r.dim} | {r.auc_mean:.4f} ± {r.auc_std:.4f} | "
