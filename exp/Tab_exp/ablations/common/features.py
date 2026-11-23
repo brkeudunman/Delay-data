@@ -48,9 +48,19 @@ def _top_ranked(path: Path, n: int, cat_cols, cont_cols):
     return kept_cat, kept_cont
 
 
+def _top_patterns(path: Path, n: int) -> list[str]:
+    """Top-n patterns by NUMERIC utility, independent of file order (01_2024_baseline
+    wrote its CSVs sorted lexicographically on string utilities). Stable sort: ties
+    keep file order."""
+    df = (pd.read_csv(path)
+          .assign(Utility=lambda d: pd.to_numeric(d["Utility"]))
+          .sort_values("Utility", ascending=False, kind="stable"))
+    return df.head(n)["Pattern"].tolist()
+
+
 def _load_patterns(ext: Path, fcfg: dict) -> list[str]:
-    d = pd.read_csv(ext / DRIVERS_FILE).head(fcfg["top_drivers_n"])["Pattern"].tolist()
-    p = pd.read_csv(ext / PROTECTORS_FILE).head(fcfg["top_protectors_n"])["Pattern"].tolist()
+    d = _top_patterns(ext / DRIVERS_FILE, fcfg["top_drivers_n"])
+    p = _top_patterns(ext / PROTECTORS_FILE, fcfg["top_protectors_n"])
     print(f"  HUIM: {len(d)} drivers + {len(p)} protectors from {ext}")
     return d + p
 

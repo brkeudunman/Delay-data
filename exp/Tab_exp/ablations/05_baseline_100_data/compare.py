@@ -66,8 +66,19 @@ def pattern_features(pattern: str) -> list[str]:
     return [cond.split("=")[0].strip() for cond in str(pattern).split(" + ") if "=" in cond]
 
 
+def read_patterns(path: Path) -> pd.DataFrame:
+    """HUIM pattern CSV sorted by NUMERIC utility (descending, stable), so .head(n) is the
+    top-n by utility regardless of file order (01_2024_baseline's files are sorted
+    lexicographically on string utilities)."""
+    return (pd.read_csv(path)
+            .assign(Utility=lambda d: pd.to_numeric(d["Utility"]))
+            .sort_values("Utility", ascending=False, kind="stable")
+            .reset_index(drop=True))
+
+
 def feature_freq(patterns: pd.Series, features: list[str], top_n: int) -> dict[str, float]:
-    """Fraction of the top-n patterns (by file order = by utility) containing each feature."""
+    """Fraction of the top-n patterns (input sorted by utility, see read_patterns)
+    containing each feature."""
     top = patterns.head(top_n)
     counts = {f: 0 for f in features}
     for pat in top:
@@ -114,8 +125,8 @@ def load_inputs():
 
     shap = pd.read_csv(SHAP_HUIM_DIR / "shap_feature_importance.csv").rename(
         columns={"Mean|SHAP|": "SHAP_mean_abs"})
-    drivers = pd.read_csv(SHAP_HUIM_DIR / "huim_delay_drivers.csv")
-    protectors = pd.read_csv(SHAP_HUIM_DIR / "huim_delay_protectors.csv")
+    drivers = read_patterns(SHAP_HUIM_DIR / "huim_delay_drivers.csv")
+    protectors = read_patterns(SHAP_HUIM_DIR / "huim_delay_protectors.csv")
     return llm_free, llm_info, shap, drivers, protectors
 
 
