@@ -43,7 +43,13 @@ MODELS = ["MLP", "AutoInt", "ResNet", "FTTransformer", "LightGBM", "XGBoost", "C
 # Where the SHAP ranking / HUIM patterns of arms 02-04 come from. The primary
 # extraction is shown in the main tables; the other-year one gets its own section.
 PRIMARY_EXT = "02_2020_train"
-OTHER_YEAR_EXT = "01_2024_baseline"
+OTHER_YEAR_EXT = "01_2024_sorted"
+# Same 2024 mining, but the pattern CSVs were string-sorted ("99388" > "540144"), so 03/04
+# runs on it used drivers ranked 54-73 and protectors ranked 8024-8040 (of 69,061) by
+# utility instead of the top 20s. Kept as a baseline for the 2024 section ("lower-ranked
+# patterns"): top-ranked vs lower-ranked patterns from the same mining.
+LEGACY_EXT = "01_2024_baseline"
+LEGACY_LABEL = " — 2024 lower-ranked patterns (baseline)"
 OTHER_YEAR_NOTE = (
     "**What this table is.** Arms 02, 03 and 04 need a SHAP feature ranking and HUIM "
     "patterns. In the main tables these are mined from the 2020 training days — the same "
@@ -51,7 +57,15 @@ OTHER_YEAR_NOTE = (
     "the ranking and patterns mined from **2024** instead (the method's original source); "
     "the models are still trained and tested on 2020. The question is whether patterns "
     "found in another year still help in 2020. The all-features reference (01b) is "
-    "repeated for comparison.")
+    "repeated for comparison. Patterns are the top-N by numeric utility "
+    f"(`{OTHER_YEAR_EXT}`); arm 02 uses only the SHAP ranking, which is byte-identical to "
+    f"`{LEGACY_EXT}`'s, so its rows were run under that name and are reused here.")
+LEGACY_NOTE = (
+    f"**Baseline rows** (\"lower-ranked patterns\"): arms 03/04 run on `{LEGACY_EXT}` before "
+    "the pattern-ranking fix. Its CSVs were sorted by utility as *text*, so instead of the "
+    "top 20 they used the drivers ranked 54–73 (of 9,565) and the protectors ranked "
+    "8,024–8,040 (of 69,061). Same mining, same SHAP features (03), same training: the "
+    "difference to the 2024 rows isolates the effect of picking the top-utility patterns.")
 METRICS = ["auc", "accuracy", "f1_macro", "average_precision"]
 # AP's chance level is the positive rate, so tables show test_pos_rate ("base rate") next to it.
 # Cells averaged over fewer seeds are blanked in the pivot / delta tables (shown as
@@ -75,6 +89,10 @@ def load() -> pd.DataFrame:
         if g["test_hash"].nunique() != 1:
             raise SystemExit(f"target={tgt}: multiple test_hash values {g['test_hash'].unique()} — "
                              "results are not on the same test set")
+    # Arm 02 depends only on shap_feature_importance.csv, identical in both 2024 folders:
+    # its LEGACY_EXT rows are valid OTHER_YEAR_EXT rows (pattern order never mattered).
+    reuse = (df["arm"] == "shap_only") & (df["extraction"] == LEGACY_EXT)
+    df.loc[reuse, "extraction"] = OTHER_YEAR_EXT
     return df
 
 
@@ -115,6 +133,8 @@ def pivot(s: pd.DataFrame) -> pd.DataFrame:
         name = ARMS.get(arm, arm)
         if ext == OTHER_YEAR_EXT:
             name += " — 2024 patterns"
+        elif ext == LEGACY_EXT:
+            name += LEGACY_LABEL
         r = {"feature set": name}
         if multi:
             r["target/p2"] = f"{tgt}/{p2}"
@@ -206,7 +226,9 @@ def write_arm_results(s: pd.DataFrame, df: pd.DataFrame) -> list[Path]:
                 "base rate": [f"{v:.4f}" for v in h["test_pos_rate"]],
                 "seeds": h["seeds"]}))
 
-        main, other = g[g.extraction != OTHER_YEAR_EXT], g[g.extraction == OTHER_YEAR_EXT]
+        legacy = g[g.extraction == LEGACY_EXT]
+        main = g[~g.extraction.isin([OTHER_YEAR_EXT, LEGACY_EXT])]
+        other = g[g.extraction == OTHER_YEAR_EXT]
         if len(other):
             lines.append("SHAP ranking / HUIM patterns mined on the **2020 training days** "
                          "(primary). Results with patterns mined on 2024 are in the last section.\n")
@@ -220,6 +242,10 @@ def write_arm_results(s: pd.DataFrame, df: pd.DataFrame) -> list[Path]:
                       "patterns from another year still help.\n"]
             for (tgt, p2), h in other.groupby(["target", "phase2_frac"]):
                 lines += [f"### target `{tgt}`, phase2_frac {p2}\n", table(h), ""]
+        if len(legacy):
+            lines += ["## 2024 patterns, lower-ranked (baseline)\n", LEGACY_NOTE + "\n"]
+            for (tgt, p2), h in legacy.groupby(["target", "phase2_frac"]):
+                lines += [f"### target `{tgt}`, phase2_frac {p2}\n", table(h), ""]
         bp = d / "best_params.json"
         if bp.exists():
             lines.append("## Phase-1 selection (shared by all seeds and phase2_frac values)\n")
@@ -228,7 +254,8 @@ def write_arm_results(s: pd.DataFrame, df: pd.DataFrame) -> list[Path]:
                 model, tgt, ext = key.split("|")
                 best = max(e.get("search", []), key=lambda r: r.get(f"mean_{e.get('scoring', 'roc_auc')}", -1),
                            default={})
-                ext = {PRIMARY_EXT: "2020 train", OTHER_YEAR_EXT: "2024"}.get(ext, ext)
+                ext = {PRIMARY_EXT: "2020 train", OTHER_YEAR_EXT: "2024",
+                       LEGACY_EXT: "2024 (lower-ranked baseline)"}.get(ext, ext)
                 rows.append({"model": model, "target": tgt, "patterns from": ext,
                              "params": json.dumps(e["params"]),
                              "CV AUC": round(best.get("mean_roc_auc", float("nan")), 4)})
@@ -270,7 +297,9 @@ def main():
     d.to_csv(OUT / "deltas.csv", index=False)
 
     is_other = s["extraction"] == OTHER_YEAR_EXT
+    is_legacy = s["extraction"] == LEGACY_EXT
     is_ref = s["arm"] == "baseline_matched_training"
+    is_main = ~is_other & ~is_legacy
     dcols = ["target", "phase2_frac", "model", "AUC 01b", "AUC 02", "AUC 03", "AUC 04",
              "Δ SHAP sel (02−01b)", "Δ HUIM (03−02)", "Δ total (03−01b)", "Δ HUIM-only (04−01b)"]
     md = ["# Ablation results\n",
@@ -286,9 +315,9 @@ def main():
           "## Side by side: AUC per feature set (rows) and model (columns)\n",
           f"mean ± std over seeds; **bold** = best model for that feature set; `{LOW_N}`: "
           f"fewer than {MIN_SEEDS} seeds, not reported (see the all-metrics table).\n",
-          md_table(pivot(s[~is_other])), "",
+          md_table(pivot(s[is_main])), "",
           "## Arm × model (all metrics)\n",
-          md_table(disp[~is_other.to_numpy()].drop(columns="extraction")), ""]
+          md_table(disp[is_main.to_numpy()].drop(columns="extraction")), ""]
     if len(d):
         md += ["## Where does the gain come from? (seed-matched AUC deltas)\n",
                "Δ SHAP sel isolates feature selection; Δ HUIM isolates adding the HUIM pattern "
@@ -296,11 +325,13 @@ def main():
                f"`{LOW_N}`: fewer than {MIN_SEEDS} seeds, not reported.\n",
                md_table(delta_display(d[d.extraction == PRIMARY_EXT], dcols)), ""]
     if is_other.any():
+        sec = is_other | is_legacy | is_ref
         md += ["## Patterns mined on another year (2024)\n", OTHER_YEAR_NOTE + "\n",
+               LEGACY_NOTE + "\n",
                "### AUC per feature set and model\n",
-               md_table(pivot(s[is_other | is_ref])), "",
+               md_table(pivot(s[sec])), "",
                "### All metrics\n",
-               md_table(disp[(is_other | is_ref).to_numpy()].drop(columns="extraction")), ""]
+               md_table(disp[sec.to_numpy()].drop(columns="extraction")), ""]
         if len(d):
             md += ["### Seed-matched AUC deltas with 2024 patterns\n",
                    md_table(delta_display(d[d.extraction == OTHER_YEAR_EXT], dcols)), ""]
