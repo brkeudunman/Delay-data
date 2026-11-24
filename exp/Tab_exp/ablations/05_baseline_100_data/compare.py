@@ -49,7 +49,7 @@ OUT_DIR = SCRIPT_DIR / "output"
 FIG_DIR = OUT_DIR / "figures"
 EXTRACTIONS_ROOT = (SCRIPT_DIR / "../../shap_huim_extractions").resolve()
 DEFAULT_EXTRACTIONS = ["01_2024_baseline", "02_2020_train"]
-EXTRACTION_YEAR = {"01_2024_baseline": "2024", "01_2024_v2": "2024", "02_2020_train": "2020 train days"}
+EXTRACTION_YEAR = {"01_2024_baseline": "2024", "01_2024_sorted": "2024", "02_2020_train": "2020 train days"}
 # set per extraction by run_one()
 SHAP_HUIM_DIR = EXTRACTIONS_ROOT / "01_2024_baseline" / "csvs"
 EXT_LABEL = "2024"

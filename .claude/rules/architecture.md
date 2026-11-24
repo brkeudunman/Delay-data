@@ -13,7 +13,7 @@
   - Each arm: `config.yaml` + thin `run.py` → `results.csv`, `best_params.json`, `predictions/`; pre-runner outputs kept as `*_legacy.*`.
   - `aggregate.py` → `aggregate/ABLATIONS.md` (mean ± std over seeds, Δ table); `paired_test.py` → paired DeLong tests.
   - `representation/` — representation ablation on a 50k all-years sample (own configs, not the runner): `bakeoff/` (embeddings x fixed MLP head, GBDT rows) and `skrub_head/` (skrub + TabFM head, Colab notebook). See `representation/README.md`.
-- `shap_huim_extractions/` — SHAP+HUIM mining: `01_2024_baseline/` (+ variant `01_2024_v2/`), `02_2020_train/` (2020 train days only); each writes `csvs/`, `txt/`.
+- `shap_huim_extractions/` — SHAP+HUIM mining: `01_2024_baseline/` (+ `01_2024_sorted/`: same patterns, numerically ranked), `02_2020_train/` (2020 train days only); each writes `csvs/`, `txt/`.
 
 ## `util/` — analysis & figures
 - `check/shap_check.py` — recompute SHAP global feature-importance ranking.
